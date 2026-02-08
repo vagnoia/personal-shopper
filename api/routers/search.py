@@ -156,8 +156,8 @@ async def search_product_links_multi(product_name: str) -> List[dict]:
                 response = await client.get(
                     "https://api.search.brave.com/res/v1/web/search",
                     headers={"X-Subscription-Token": BRAVE_API_KEY},
-                    params={"q": query, "count": 3},
-                    timeout=8.0
+                    params={"q": query, "count": 5},
+                    timeout=10.0
                 )
                 if response.status_code != 200:
                     return None
@@ -173,8 +173,8 @@ async def search_product_links_multi(product_name: str) -> List[dict]:
                         if price_match:
                             price = price_match.group(0)
                         return {"store": store_name, "url": url, "price": price}
-        except:
-            pass
+        except Exception:
+            return None
         return None
     
     # Run store searches in parallel
@@ -308,15 +308,23 @@ async def enrich_product(rec: dict, language: str) -> Optional[ProductRecommenda
     """Enrich a product with links, reviews, and images. Returns None if no links found."""
     product_name = rec.get("name", "")
     
-    # Parallel fetch: links, reviews, images
-    links_task = search_product_links_multi(product_name)
-    reviews_task = search_youtube_reviews(product_name, language)
-    images_task = search_brave_images(f"{product_name} produto")
-    
-    links, reviews, images = await asyncio.gather(links_task, reviews_task, images_task)
-    
-    # CRITICAL: Skip products without any links
-    if not links:
+    try:
+        # Parallel fetch: links, reviews, images
+        links_task = search_product_links_multi(product_name)
+        reviews_task = search_youtube_reviews(product_name, language)
+        images_task = search_brave_images(f"{product_name} produto")
+        
+        results = await asyncio.gather(links_task, reviews_task, images_task, return_exceptions=True)
+        
+        # Handle exceptions
+        links = results[0] if not isinstance(results[0], Exception) else []
+        reviews = results[1] if not isinstance(results[1], Exception) else []
+        images = results[2] if not isinstance(results[2], Exception) else []
+        
+        # CRITICAL: Skip products without any links
+        if not links:
+            return None
+    except Exception:
         return None
     
     # Get best image
@@ -368,11 +376,13 @@ async def search_products(request: SearchRequest):
                 result.rank = len(enriched) + 1  # Re-rank
                 enriched.append(result)
         
-        # If we got less than 3 products, the search quality is low
+        # If we got less than 2 products, the search quality is low
         if len(enriched) < 2:
+            # Debug: show what we tried
+            tried_products = [r.get("name", "?") for r in recommendations[:6]]
             raise HTTPException(
                 status_code=404, 
-                detail="Não encontramos produtos suficientes com links de compra. Tente uma busca mais específica."
+                detail=f"Não encontramos produtos suficientes com links de compra. Tentamos: {', '.join(tried_products[:3])}... Tente uma busca mais específica."
             )
         
         return SearchResponse(
