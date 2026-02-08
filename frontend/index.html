@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personal Shopper AI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .search-btn { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); }
+        .search-btn:hover { background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%); }
+        .tag:hover { background-color: #f3f4f6; }
+        .product-card { transition: transform 0.2s, box-shadow 0.2s; }
+        .product-card:hover { transform: translateY(-4px); box-shadow: 0 12px 24px rgba(0,0,0,0.1); }
+        .loading { display: none; }
+        .loading.active { display: flex; }
+        .chat-message { animation: fadeIn 0.3s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body class="bg-white min-h-screen">
+    <header class="border-b border-gray-100">
+        <div class="container mx-auto px-4 py-4 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <span class="text-2xl">🛒</span>
+                <span class="font-bold text-xl">PersonalShopper</span>
+            </div>
+        </div>
+    </header>
+
+    <main id="main-content">
+        <section id="hero-section" class="py-16 md:py-24">
+            <div class="container mx-auto px-4 text-center">
+                <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+                    Descubra sua próxima<br>
+                    <span class="text-red-500">melhor compra com IA</span>
+                </h1>
+                <p class="text-gray-500 mb-8 max-w-md mx-auto">
+                    Descreva o que você precisa e a IA encontra as melhores opções
+                </p>
+                
+                <form id="searchForm" class="max-w-2xl mx-auto mb-8">
+                    <div class="flex items-center bg-gray-50 rounded-full border border-gray-200 p-2 focus-within:border-red-300 focus-within:ring-2 focus-within:ring-red-100">
+                        <span class="pl-4 text-gray-400">🔍</span>
+                        <input type="text" id="query" placeholder="fone tipo airpod até 1000 reais" class="flex-1 bg-transparent px-4 py-3 outline-none text-gray-700" required>
+                        <button type="submit" class="search-btn text-white px-6 py-3 rounded-full font-medium">Buscar</button>
+                    </div>
+                </form>
+
+                <div class="mb-12">
+                    <p class="text-xs text-gray-400 uppercase tracking-wide mb-3">Buscas populares</p>
+                    <div class="flex flex-wrap justify-center gap-2">
+                        <button onclick="searchTag('Notebook gamer barato')" class="tag px-4 py-2 bg-gray-50 rounded-full text-sm text-gray-600 border border-gray-200">Notebook gamer barato</button>
+                        <button onclick="searchTag('Fone bluetooth até 200')" class="tag px-4 py-2 bg-gray-50 rounded-full text-sm text-gray-600 border border-gray-200">Fone bluetooth até 200</button>
+                        <button onclick="searchTag('Smartwatch com GPS')" class="tag px-4 py-2 bg-gray-50 rounded-full text-sm text-gray-600 border border-gray-200">Smartwatch com GPS</button>
+                        <button onclick="searchTag('Cadeira ergonômica')" class="tag px-4 py-2 bg-gray-50 rounded-full text-sm text-gray-600 border border-gray-200">Cadeira ergonômica</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div id="loading" class="loading fixed inset-0 bg-white bg-opacity-90 items-center justify-center z-50">
+            <div class="text-center">
+                <div class="animate-spin rounded-full h-12 w-12 border-4 border-red-500 border-t-transparent mx-auto mb-4"></div>
+                <p class="text-gray-600">Buscando as melhores opções...</p>
+            </div>
+        </div>
+
+        <section id="results-section" class="hidden py-8">
+            <div class="container mx-auto px-4 max-w-4xl">
+                <div id="chat-container" class="space-y-6"></div>
+                <div class="sticky bottom-4 mt-8">
+                    <form id="followUpForm" class="flex items-center bg-white rounded-full border border-gray-200 p-2 shadow-lg">
+                        <input type="text" id="followUpQuery" placeholder="Pergunte mais..." class="flex-1 bg-transparent px-4 py-3 outline-none text-gray-700">
+                        <button type="submit" class="search-btn text-white px-6 py-3 rounded-full font-medium">Enviar</button>
+                    </form>
+                    <button onclick="newSearch()" class="mt-4 text-sm text-gray-500 hover:text-gray-700 mx-auto block">← Nova busca</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const API_URL = '';
+        
+        document.getElementById('searchForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await performSearch(document.getElementById('query').value.trim());
+        });
+
+        document.getElementById('followUpForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const q = document.getElementById('followUpQuery').value.trim();
+            if (!q) return;
+            document.getElementById('followUpQuery').value = '';
+            addUserMessage(q);
+            await performSearch(q);
+        });
+
+        function searchTag(query) {
+            document.getElementById('query').value = query;
+            performSearch(query);
+        }
+
+        function newSearch() {
+            document.getElementById('hero-section').classList.remove('hidden');
+            document.getElementById('results-section').classList.add('hidden');
+            document.getElementById('chat-container').innerHTML = '';
+            document.getElementById('query').value = '';
+        }
+
+        function addUserMessage(text) {
+            document.getElementById('chat-container').innerHTML += `<div class="chat-message flex justify-end"><div class="bg-red-500 text-white px-4 py-3 rounded-2xl rounded-br-md max-w-md">${text}</div></div>`;
+        }
+
+        function addAIMessage(html) {
+            document.getElementById('chat-container').innerHTML += `<div class="chat-message"><div class="bg-gray-100 px-4 py-3 rounded-2xl rounded-bl-md max-w-3xl">${html}</div></div>`;
+        }
+
+        async function performSearch(query) {
+            if (!query) return;
+            document.getElementById('loading').classList.add('active');
+            document.getElementById('hero-section').classList.add('hidden');
+            document.getElementById('results-section').classList.remove('hidden');
+            
+            if (!document.getElementById('chat-container').innerHTML.includes(query)) addUserMessage(query);
+
+            try {
+                const response = await fetch(`${API_URL}/api/search`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ query, language: 'pt-BR', country: 'BR' })
+                });
+                const data = await response.json();
+                if (!response.ok) throw new Error(data.detail || 'Erro');
+                displayResults(data);
+            } catch (error) {
+                addAIMessage(`<p class="text-red-500">Erro: ${error.message}</p>`);
+            } finally {
+                document.getElementById('loading').classList.remove('active');
+            }
+        }
+
+        function displayResults(data) {
+            let html = `<p class="text-gray-600 mb-4">Encontrei <strong>${data.recommendations.length} opções</strong>:</p><div class="space-y-4">`;
+            
+            data.recommendations.forEach((rec) => {
+                const link = rec.buy_links[0];
+                html += `<div class="product-card bg-white border border-gray-200 rounded-xl p-4">
+                    <div class="flex items-start gap-4">
+                        <div class="w-14 h-14 bg-gray-100 rounded-lg flex items-center justify-center text-2xl">${getEmoji(rec.name)}</div>
+                        <div class="flex-1">
+                            <div class="flex justify-between gap-2">
+                                <h3 class="font-semibold text-gray-900">${rec.name}</h3>
+                                <span class="text-red-500 font-bold">${rec.price_range}</span>
+                            </div>
+                            <p class="text-sm text-gray-500 mt-1">${rec.description}</p>
+                            <div class="flex flex-wrap gap-1 mt-2">${rec.pros.slice(0,3).map(p => `<span class="text-xs bg-green-50 text-green-700 px-2 py-1 rounded">✓ ${p}</span>`).join('')}</div>
+                            ${link ? `<a href="${link.url}" target="_blank" class="inline-block mt-3 text-sm text-red-500 font-medium">Comprar em ${link.store} →</a>` : ''}
+                        </div>
+                    </div>
+                </div>`;
+            });
+            
+            html += `</div><p class="text-xs text-gray-400 mt-4">Busca em ${(data.search_time_ms/1000).toFixed(1)}s</p>`;
+            addAIMessage(html);
+            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+        }
+
+        function getEmoji(n) {
+            n = n.toLowerCase();
+            if (n.includes('fone') || n.includes('headphone')) return '🎧';
+            if (n.includes('monitor')) return '🖥️';
+            if (n.includes('notebook')) return '💻';
+            if (n.includes('teclado')) return '⌨️';
+            if (n.includes('mouse')) return '🖱️';
+            if (n.includes('cadeira')) return '🪑';
+            if (n.includes('smartwatch')) return '⌚';
+            if (n.includes('tênis')) return '👟';
+            if (n.includes('celular') || n.includes('phone')) return '📱';
+            return '📦';
+        }
+    </script>
+</body>
+</html>
