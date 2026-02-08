@@ -87,18 +87,26 @@ async def analyze_with_claude(query: str, search_results: dict, max_price: Optio
     price_instruction = f"O usuário tem orçamento máximo de R${max_price}." if max_price else ""
     lang_instruction = "Responda em português brasileiro." if language == "pt-BR" else "Respond in English."
     
-    prompt = f"""Você é um personal shopper AI. Analise os resultados e recomende 3-5 melhores produtos.
+    prompt = f"""Você é um personal shopper AI especialista. Analise os resultados e recomende 3-5 produtos ESPECÍFICOS.
 
-BUSCA: {query}
+BUSCA DO USUÁRIO: {query}
 {price_instruction}
 
-RESULTADOS:
+RESULTADOS DA PESQUISA:
 {results_text}
+
+REGRAS IMPORTANTES:
+1. Recomende produtos ESPECÍFICOS com nome e modelo exato (ex: "JBL Tune 520BT", não "Fone JBL")
+2. Os buy_links DEVEM ser URLs diretas para a PÁGINA DO PRODUTO, não páginas de busca ou listas
+3. URLs válidas: amazon.com.br/dp/XXXXX, mercadolivre.com.br/MLB-XXXXX, loja.com/produto/nome
+4. URLs INVÁLIDAS (não use): amazon.com.br/s?k=..., lista.mercadolivre.com.br/..., /search?q=...
+5. Se não encontrar link direto do produto, use o link mais específico disponível nos resultados
+6. Inclua preço real quando disponível nos resultados
 
 {lang_instruction}
 
-Retorne APENAS JSON válido:
-{{"recommendations": [{{"rank": 1, "name": "Nome", "price_range": "R$ X - R$ Y", "description": "Desc", "pros": ["p1"], "cons": ["c1"], "buy_links": [{{"store": "Loja", "url": "https://...", "price": "R$ X"}}], "recommendation_reason": "Motivo"}}]}}"""
+Retorne APENAS JSON válido (sem markdown):
+{{"recommendations": [{{"rank": 1, "name": "Modelo Específico do Produto", "price_range": "R$ X - R$ Y", "description": "Descrição", "pros": ["pro1", "pro2"], "cons": ["con1"], "buy_links": [{{"store": "Amazon", "url": "https://www.amazon.com.br/dp/XXXXXXX", "price": "R$ 199"}}], "recommendation_reason": "Motivo"}}]}}"""
 
     response = client.messages.create(
         model="claude-sonnet-4-20250514",
