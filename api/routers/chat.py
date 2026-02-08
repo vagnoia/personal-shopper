@@ -53,49 +53,67 @@ FORMATO:
 - Respostas com produtos: breves, nomes em **negrito**"""
 
 async def execute_search(query: str) -> dict:
-    """Execute product search and return results"""
+    """Execute product search and return results with deep analysis"""
     try:
         # Search
         search_results = await brave_search(f"{query} comprar", count=15)
         
-        # Extract product names with Claude
+        # Get detailed recommendations with Claude
         client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
         
         results_text = "\n".join([
-            f"- {r.get('title', '')} | {r.get('description', '')[:100]}"
-            for r in search_results.get("web", {}).get("results", [])[:10]
+            f"- {r.get('title', '')} | {r.get('description', '')[:150]}"
+            for r in search_results.get("web", {}).get("results", [])[:12]
         ])
         
         resp = client.messages.create(
             model="claude-sonnet-4-20250514",
-            max_tokens=500,
+            max_tokens=1200,
             messages=[{
                 "role": "user",
-                "content": f"Extraia 3-4 nomes de produtos específicos desses resultados.\nBusca: {query}\nResultados:\n{results_text}\n\nRetorne APENAS JSON: [\"Produto 1\", \"Produto 2\"]"
+                "content": f"""Analise os resultados e recomende 3-4 produtos ESPECÍFICOS.
+
+BUSCA: {query}
+
+RESULTADOS:
+{results_text}
+
+Retorne APENAS JSON (sem markdown):
+{{"products": [
+  {{"name": "Nome Exato do Produto", "price": "R$ XXX", "pros": ["vantagem 1", "vantagem 2"], "cons": ["desvantagem"], "reason": "Por que recomendar"}}
+]}}"""
             }]
         )
         
-        # Parse products
-        match = re.search(r'\[.*\]', resp.content[0].text, re.DOTALL)
+        # Parse products with analysis
+        match = re.search(r'\{[\s\S]*\}', resp.content[0].text)
         if not match:
             return {"products": [], "error": "No products found"}
         
-        product_names = json.loads(match.group())
+        analyzed = json.loads(match.group())
+        product_list = analyzed.get("products", [])
         
-        # Enrich products
+        # Enrich products with links, reviews, images
         products = []
-        for name in product_names[:4]:
+        for p in product_list[:4]:
+            name = p.get("name", "")
+            if not name:
+                continue
+                
             links = await find_product_links(name)
             if not links:
                 continue
             
             reviews = await find_youtube_reviews(name)
             image = await find_product_image(name, links)
-            price = links[0].get("price") or "Ver preço"
+            price = p.get("price") or links[0].get("price") or "Ver preço"
             
             products.append({
                 "name": name,
                 "price": price,
+                "pros": p.get("pros", []),
+                "cons": p.get("cons", []),
+                "reason": p.get("reason", ""),
                 "buy_links": links,
                 "review_videos": reviews,
                 "image_url": image
@@ -136,13 +154,13 @@ async def chat(request: ChatRequest):
                 result = await execute_search(tool_use.input.get("query", ""))
                 products = result.get("products", [])
                 
-                # Format for Claude
+                # Format for Claude with full analysis
                 if products:
                     products_text = "\n".join([
-                        f"- {p['name']}: {p['price']} ({p['buy_links'][0]['store']})"
+                        f"**{p['name']}** - {p['price']} ({p['buy_links'][0]['store']})\n  ✓ Prós: {', '.join(p.get('pros', []))}\n  ✗ Contras: {', '.join(p.get('cons', []))}\n  → {p.get('reason', '')}"
                         for p in products
                     ])
-                    tool_result = f"Encontrei {len(products)} produtos:\n{products_text}"
+                    tool_result = f"Encontrei {len(products)} produtos com análise:\n\n{products_text}"
                 else:
                     tool_result = "Não encontrei produtos para essa busca."
                 

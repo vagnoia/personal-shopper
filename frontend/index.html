@@ -375,6 +375,8 @@
                 const link = p.buy_links?.[0];
                 const price = p.price?.match?.(/R\$[\d.,\s]+/)?.[0] || p.price || 'Ver preço';
                 const hasImg = p.image_url && !p.image_url.includes('logo');
+                const pros = p.pros?.slice(0, 2) || [];
+                const cons = p.cons?.slice(0, 1) || [];
                 
                 return `
                     <div class="product-card bg-white rounded-xl overflow-hidden border border-gray-100 shadow-sm">
@@ -389,8 +391,14 @@
                         <div class="p-3">
                             <p class="text-[10px] text-gray-400 uppercase">${link?.store || ''}</p>
                             <h4 class="text-sm font-medium text-gray-900 line-clamp-2 mb-1">${p.name}</h4>
-                            <p class="text-base font-bold text-gray-900">${price}</p>
-                            ${link ? `<a href="${link.url}" target="_blank" class="mt-2 block w-full bg-gray-900 hover:bg-gray-800 text-white text-center py-2 rounded-lg text-xs font-medium transition">Ver na ${link.store}</a>` : ''}
+                            <p class="text-base font-bold text-gray-900 mb-2">${price}</p>
+                            ${pros.length || cons.length ? `
+                            <div class="text-[11px] space-y-0.5 mb-2">
+                                ${pros.map(pro => `<div class="text-emerald-600">✓ ${pro}</div>`).join('')}
+                                ${cons.map(con => `<div class="text-gray-400">✗ ${con}</div>`).join('')}
+                            </div>
+                            ` : ''}
+                            ${link ? `<a href="${link.url}" target="_blank" class="block w-full bg-gray-900 hover:bg-gray-800 text-white text-center py-2 rounded-lg text-xs font-medium transition">Ver na ${link.store}</a>` : ''}
                         </div>
                     </div>
                 `;
