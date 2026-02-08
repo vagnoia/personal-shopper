@@ -171,7 +171,7 @@
         </header>
 
         <!-- Chat Title -->
-        <div class="text-center py-6 border-b border-gray-50">
+        <div class="text-center py-6">
             <h1 id="queryTitle" class="text-xl md:text-2xl font-bold text-gray-900"></h1>
         </div>
 
@@ -423,7 +423,9 @@
 
         function scrollToBottom() {
             const chat = document.getElementById('chatMessages');
-            chat.scrollTop = chat.scrollHeight;
+            setTimeout(() => {
+                chat.scrollTo({ top: chat.scrollHeight, behavior: 'smooth' });
+            }, 50);
         }
 
         function getEmoji(name) {
