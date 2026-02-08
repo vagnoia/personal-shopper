@@ -85,8 +85,20 @@ async def search_product_links(product_name: str) -> List[dict]:
                     url = result.get("url", "")
                     title = result.get("title", "")
                     # Filter for product pages (not list/search pages)
-                    if any(x in url for x in ["/p/MLB", "/dp/", "/produto/", "MLB-", "-MLB"]) and \
-                       not any(x in url for x in ["lista.", "/s?", "/search", "?k="]):
+                    is_product_page = any(x in url for x in ["/p/MLB", "/dp/", "/produto/"])
+                    is_list_page = any(x in url for x in [
+                        "lista.mercadolivre", 
+                        "/s?", 
+                        "/search", 
+                        "?k=",
+                        "/b/",  # Amazon browse pages
+                        "mercadolivre.com.br/ofertas",
+                        "mercadolivre.com.br/c/",  # Category pages
+                    ])
+                    # For ML, also check if URL doesn't have /p/ pattern (product pages have /p/MLB)
+                    if "mercadolivre" in url and "/p/MLB" not in url and "/p/MLA" not in url:
+                        is_list_page = True
+                    if is_product_page and not is_list_page:
                         links.append({"store": store_name, "url": url, "price": None})
                         break  # One link per store
             except:
@@ -183,15 +195,40 @@ async def search_products(request: SearchRequest):
         search_results = await search_brave(search_query, request.country)
         recommendations = await analyze_with_claude(request.query, search_results, request.max_price, request.language)
         
+        def is_valid_product_url(url: str) -> bool:
+            """Check if URL is a direct product page, not a list/search page"""
+            if not url:
+                return False
+            invalid_patterns = [
+                "lista.mercadolivre",
+                "/s?", "/search", "?k=", "/b/",
+                "mercadolivre.com.br/ofertas",
+                "mercadolivre.com.br/c/",
+            ]
+            if any(p in url for p in invalid_patterns):
+                return False
+            # Mercado Livre must have /p/MLB pattern
+            if "mercadolivre" in url and "/p/MLB" not in url and "/p/MLA" not in url:
+                return False
+            # Amazon must have /dp/ pattern
+            if "amazon.com" in url and "/dp/" not in url:
+                return False
+            return True
+        
         enriched = []
         for rec in recommendations[:5]:
+            # Filter Claude's buy_links to remove list pages
+            claude_links = [l for l in rec.get("buy_links", []) if is_valid_product_url(l.get("url", ""))]
+            
             # Enrich with real product links
             try:
                 real_links = await search_product_links(rec.get("name", ""))
                 if real_links:
-                    rec["buy_links"] = real_links + rec.get("buy_links", [])[:1]
+                    rec["buy_links"] = real_links + claude_links[:1]
+                else:
+                    rec["buy_links"] = claude_links
             except:
-                pass
+                rec["buy_links"] = claude_links
             
             # Enrich with YouTube reviews
             try:
