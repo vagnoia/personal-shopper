@@ -59,9 +59,10 @@ def is_valid_product_url(url: str) -> bool:
     ]
     if any(p in url for p in invalid_patterns):
         return False
-    # Mercado Livre must have /p/MLB or /p/MLA or MLB- pattern in path
+    # Mercado Livre: accept /p/MLB, /p/MLA, MLB-, or produto.mercadolivre.com.br
     if "mercadolivre" in url:
-        if "/p/MLB" not in url and "/p/MLA" not in url and "MLB-" not in url:
+        valid_ml_patterns = ["/p/MLB", "/p/MLA", "MLB-", "MLA-", "produto.mercadolivre.com.br"]
+        if not any(p in url for p in valid_ml_patterns):
             return False
     # Amazon must have /dp/ pattern
     if "amazon.com" in url and "/dp/" not in url:
@@ -141,11 +142,11 @@ async def search_product_links_multi(product_name: str) -> List[dict]:
     links = []
     seen_stores = set()
     
-    # Strategy 1: Direct store searches
+    # Strategy 1: Direct store searches (don't include path in site: filter)
     store_searches = [
-        ("Mercado Livre", f'{product_name} site:mercadolivre.com.br/p/'),
-        ("Amazon", f'{product_name} site:amazon.com.br/dp/'),
-        ("KaBuM!", f'{product_name} site:kabum.com.br/produto/'),
+        ("Mercado Livre", f'{product_name} site:mercadolivre.com.br'),
+        ("Amazon", f'{product_name} site:amazon.com.br'),
+        ("KaBuM!", f'{product_name} site:kabum.com.br'),
         ("Magazine Luiza", f'{product_name} site:magazineluiza.com.br'),
     ]
     
