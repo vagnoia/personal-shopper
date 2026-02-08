@@ -72,6 +72,10 @@
         
         /* Streaming cursor */
         .streaming-cursor { color: #FF4D6D; font-weight: bold; }
+        
+        /* Hide scrollbar */
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
 <body class="bg-white min-h-screen">
@@ -84,10 +88,6 @@
                 <a href="/" class="flex items-center">
                     <span class="font-extrabold text-xl text-gray-900">All</span><span class="font-extrabold text-xl text-primary">.</span><span class="font-extrabold text-xl text-gray-900">Shop</span>
                 </a>
-                <div class="flex items-center gap-3">
-                    <button class="text-sm bg-primary text-white px-4 py-2 rounded-full hover:opacity-90 font-medium">Entrar</button>
-                    <button class="text-sm text-gray-700 hover:text-gray-900 px-3 py-2">Criar conta</button>
-                </div>
             </div>
         </header>
 
@@ -131,11 +131,11 @@
                 </form>
 
                 <!-- Popular Searches -->
-                <div class="flex flex-wrap justify-center gap-2 mb-6">
-                    <button onclick="search('Notebook gamer barato')" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-full text-sm text-gray-700 transition">Notebook gamer barato</button>
-                    <button onclick="search('Fone bluetooth até 500')" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-full text-sm text-gray-700 transition">Fone bluetooth até 500</button>
-                    <button onclick="search('Smartwatch com GPS')" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-full text-sm text-gray-700 transition">Smartwatch com GPS</button>
-                    <button onclick="search('Cadeira ergonômica')" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-full text-sm text-gray-700 transition">Cadeira ergonômica</button>
+                <div class="flex md:flex-wrap md:justify-center gap-2 mb-6 overflow-x-auto pb-2 -mx-4 px-4 md:mx-0 md:px-0 md:overflow-visible scrollbar-hide">
+                    <button onclick="search('Notebook gamer barato')" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-full text-sm text-gray-700 transition whitespace-nowrap flex-shrink-0">Notebook gamer barato</button>
+                    <button onclick="search('Fone bluetooth até 500')" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-full text-sm text-gray-700 transition whitespace-nowrap flex-shrink-0">Fone bluetooth até 500</button>
+                    <button onclick="search('Smartwatch com GPS')" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-full text-sm text-gray-700 transition whitespace-nowrap flex-shrink-0">Smartwatch com GPS</button>
+                    <button onclick="search('Cadeira ergonômica')" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-full text-sm text-gray-700 transition whitespace-nowrap flex-shrink-0">Cadeira ergonômica</button>
                 </div>
 
                 <!-- Store logos - centered below -->
