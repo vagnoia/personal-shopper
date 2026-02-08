@@ -57,30 +57,44 @@ async def search_brave(query: str, country: str = "BR", count: int = 20) -> dict
         return response.json()
 
 async def search_product_links(product_name: str) -> List[dict]:
-    """Search for specific product buy links"""
+    """Search for specific product buy links from major stores"""
+    links = []
+    stores = [
+        ("Mercado Livre", "site:mercadolivre.com.br"),
+        ("Amazon", "site:amazon.com.br"),
+        ("Magazine Luiza", "site:magazineluiza.com.br"),
+    ]
+    
     try:
-        query = f'"{product_name}" comprar site:amazon.com.br OR site:mercadolivre.com.br OR site:magazineluiza.com.br'
-        async with httpx.AsyncClient() as client:
-            response = await client.get(
-                "https://api.search.brave.com/res/v1/web/search",
-                headers={"X-Subscription-Token": BRAVE_API_KEY},
-                params={"q": query, "count": 5},
-                timeout=10.0
-            )
-            response.raise_for_status()
-            data = response.json()
-        
-        links = []
-        for result in data.get("web", {}).get("results", []):
-            url = result.get("url", "")
-            # Filter for actual product pages, not search/list pages
-            if any(x in url for x in ["/dp/", "/p/", "/produto/", "MLB-", "/item/"]) and \
-               not any(x in url for x in ["?k=", "/s?", "lista.", "/search"]):
-                store = "Amazon" if "amazon" in url else "Mercado Livre" if "mercadolivre" in url else "Magazine Luiza" if "magazineluiza" in url else "Loja"
-                links.append({"store": store, "url": url, "price": None})
-        return links[:2]
+        # Search each store
+        for store_name, site_filter in stores[:2]:  # Limit to 2 stores to avoid rate limits
+            try:
+                query = f'{product_name} {site_filter}'
+                async with httpx.AsyncClient() as client:
+                    response = await client.get(
+                        "https://api.search.brave.com/res/v1/web/search",
+                        headers={"X-Subscription-Token": BRAVE_API_KEY},
+                        params={"q": query, "count": 3},
+                        timeout=8.0
+                    )
+                    if response.status_code != 200:
+                        continue
+                    data = response.json()
+                
+                for result in data.get("web", {}).get("results", []):
+                    url = result.get("url", "")
+                    title = result.get("title", "")
+                    # Filter for product pages (not list/search pages)
+                    if any(x in url for x in ["/p/MLB", "/dp/", "/produto/", "MLB-", "-MLB"]) and \
+                       not any(x in url for x in ["lista.", "/s?", "/search", "?k="]):
+                        links.append({"store": store_name, "url": url, "price": None})
+                        break  # One link per store
+            except:
+                continue
     except:
-        return []
+        pass
+    
+    return links
 
 async def search_youtube_reviews(product_name: str, language: str = "pt-BR") -> List[dict]:
     try:
