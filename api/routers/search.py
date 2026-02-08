@@ -150,20 +150,30 @@ async def find_youtube_reviews(product_name: str) -> List[dict]:
     return videos
 
 async def find_product_image(product_name: str) -> Optional[str]:
-    """Find product image"""
+    """Find product image from web search results (more reliable than images API)"""
     try:
+        # Use web search and extract og:image or product images from results
+        data = await brave_search(f"{product_name} site:amazon.com.br OR site:mercadolivre.com.br", count=3)
+        for r in data.get("web", {}).get("results", []):
+            # Try to get thumbnail from search result
+            thumb = r.get("thumbnail", {}).get("src")
+            if thumb and "http" in thumb:
+                return thumb
+        
+        # Fallback: try images API
         async with httpx.AsyncClient() as client:
             resp = await client.get(
                 "https://api.search.brave.com/res/v1/images/search",
                 headers={"X-Subscription-Token": BRAVE_API_KEY},
-                params={"q": f"{product_name} produto", "count": 3},
+                params={"q": f"{product_name}", "count": 5, "safesearch": "moderate"},
                 timeout=10.0
             )
             if resp.status_code == 200:
                 data = resp.json()
                 for r in data.get("results", []):
-                    img = r.get("properties", {}).get("url") or r.get("thumbnail", {}).get("src")
-                    if img:
+                    # Brave Images API structure
+                    img = r.get("thumbnail", {}).get("src") or r.get("properties", {}).get("url")
+                    if img and "http" in img:
                         return img
     except Exception:
         pass
