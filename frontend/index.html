@@ -107,7 +107,7 @@
         <section class="relative z-10 pt-28 md:pt-36 pb-12 px-4">
             <div class="max-w-3xl mx-auto text-center w-full">
                 <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-2">Encontre</h1>
-                <h1 id="heroSubtitle" class="text-4xl md:text-5xl lg:text-6xl font-bold text-emerald-500 mb-8 transition-opacity duration-300" style="opacity: 1;">sua próxima compra perfeita</h1>
+                <h1 id="heroSubtitle" class="text-4xl md:text-5xl lg:text-6xl font-bold text-emerald-500 mb-8 transition-opacity duration-300 min-h-[2.4em]" style="opacity: 1;">sua próxima compra perfeita</h1>
                 
                 <!-- Carousel Dots -->
                 <div class="flex justify-center gap-2 mb-10">
@@ -203,7 +203,7 @@
             heroSubtitle.style.opacity = 0;
             setTimeout(() => {
                 heroSubtitle.textContent = sub.text;
-                heroSubtitle.className = `text-4xl md:text-5xl lg:text-6xl font-bold ${sub.color} mb-8 transition-opacity duration-300`;
+                heroSubtitle.className = `text-4xl md:text-5xl lg:text-6xl font-bold ${sub.color} mb-8 transition-opacity duration-300 min-h-[2.4em]`;
                 heroSubtitle.style.opacity = 1;
                 dots.forEach((d, i) => d.classList.toggle('active', i === currentSubtitle));
             }, 300);
