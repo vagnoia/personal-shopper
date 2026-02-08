@@ -153,11 +153,11 @@
         </div>
     </div>
 
-    <!-- RESULTS PAGE -->
-    <div id="resultsPage" class="hidden min-h-screen bg-white">
+    <!-- CHAT PAGE -->
+    <div id="resultsPage" class="hidden min-h-screen bg-white flex flex-col">
         <!-- Header -->
-        <header class="bg-white border-b border-gray-100 sticky top-0 z-50">
-            <div class="max-w-4xl mx-auto px-4 py-3 flex items-center gap-4">
+        <header class="bg-white/80 backdrop-blur-sm border-b border-gray-100 sticky top-0 z-50">
+            <div class="max-w-3xl mx-auto px-4 py-3 flex items-center gap-4">
                 <button onclick="goHome()" class="text-gray-400 hover:text-gray-600">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
@@ -167,68 +167,39 @@
                     <span class="text-xl">🛒</span>
                     <span class="font-bold text-lg text-gray-900">PersonalShopper</span>
                 </a>
-                <div class="flex-1"></div>
-                <button class="text-gray-400 hover:text-gray-600" title="Histórico">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                    </svg>
-                </button>
             </div>
         </header>
 
-        <!-- Results Content -->
-        <main class="max-w-4xl mx-auto px-4 py-8 pb-24">
-            <!-- Query Title -->
-            <h1 id="queryTitle" class="text-2xl md:text-3xl font-bold text-gray-900 text-center mb-2"></h1>
-            <p class="text-center text-sm text-gray-400 mb-8">
-                <span class="inline-flex items-center gap-1">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                    </svg>
-                    BUSCA REALIZADA
-                </span>
-            </p>
+        <!-- Chat Title -->
+        <div class="text-center py-6 border-b border-gray-50">
+            <h1 id="queryTitle" class="text-xl md:text-2xl font-bold text-gray-900"></h1>
+        </div>
 
-            <!-- Loading State -->
-            <div id="loadingState" class="text-center py-12">
-                <div class="inline-flex items-center gap-3 text-gray-500">
-                    <svg class="animate-spin w-6 h-6" fill="none" viewBox="0 0 24 24">
-                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                    <span>Buscando os melhores produtos...</span>
-                </div>
+        <!-- Chat Messages -->
+        <main id="chatMessages" class="flex-1 overflow-y-auto px-4 py-6 pb-32">
+            <div class="max-w-3xl mx-auto space-y-6" id="messagesContainer">
+                <!-- Messages will be added here -->
             </div>
-
-            <!-- Results Content -->
-            <div id="resultsContent" class="hidden fade-in">
-                <!-- Summary -->
-                <div id="summaryText" class="text-gray-700 leading-relaxed mb-8 text-center max-w-2xl mx-auto"></div>
-
-                <!-- Product Cards -->
-                <div id="productCards" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8"></div>
-
-                <!-- Follow-up Suggestions -->
-                <div id="suggestions" class="flex flex-wrap justify-center gap-2 mb-8"></div>
-            </div>
-
         </main>
 
-        <!-- Follow-up Input - Fixed at bottom -->
-        <div id="followUpSection" class="hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 z-40">
-            <form id="followUpForm" class="relative max-w-2xl mx-auto">
-                <input 
-                    type="text" 
-                    id="followUpInput"
-                    placeholder="Pergunte mais sobre os modelos..."
-                    class="w-full px-5 py-3 pr-14 border border-gray-200 rounded-full focus:outline-none focus:border-red-400 bg-white shadow-sm"
-                >
-                <button type="submit" class="absolute right-2 top-1/2 -translate-y-1/2 bg-red-500 hover:bg-red-600 text-white w-9 h-9 rounded-full flex items-center justify-center transition">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
-                    </svg>
-                </button>
-            </form>
+        <!-- Floating Input with gradient fade -->
+        <div class="fixed bottom-0 left-0 right-0 z-40 pointer-events-none">
+            <div class="h-8 bg-gradient-to-t from-white to-transparent"></div>
+            <div class="bg-white px-4 pb-6 pt-2 pointer-events-auto">
+                <form id="followUpForm" class="relative max-w-2xl mx-auto">
+                    <input 
+                        type="text" 
+                        id="followUpInput"
+                        placeholder="Continue a conversa..."
+                        class="w-full px-5 py-3 pr-14 border border-gray-200 rounded-full focus:outline-none focus:border-red-400 bg-white shadow-lg"
+                    >
+                    <button type="submit" class="absolute right-2 top-1/2 -translate-y-1/2 bg-red-500 hover:bg-red-600 text-white w-9 h-9 rounded-full flex items-center justify-center transition shadow-md">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+                        </svg>
+                    </button>
+                </form>
+            </div>
         </div>
     </div>
 
@@ -259,6 +230,8 @@
         // State
         let conversationHistory = [];
         let currentQuery = '';
+        let currentAssistantBubble = null;
+        let currentProductsContainer = null;
 
         // Search form
         document.getElementById('searchForm').addEventListener('submit', (e) => {
@@ -271,40 +244,87 @@
         document.getElementById('followUpForm').addEventListener('submit', (e) => {
             e.preventDefault();
             const query = document.getElementById('followUpInput').value.trim();
-            if (query) sendFollowUp(query);
+            if (query) sendMessage(query);
         });
 
         function search(query) {
             currentQuery = query;
-            conversationHistory = [{ role: 'user', content: query }];
+            conversationHistory = [];
+            document.getElementById('messagesContainer').innerHTML = '';
             
             document.getElementById('homePage').classList.add('hidden');
             document.getElementById('resultsPage').classList.remove('hidden');
             document.getElementById('queryTitle').textContent = query;
-            document.getElementById('loadingState').classList.remove('hidden');
-            document.getElementById('resultsContent').classList.add('hidden');
-            document.getElementById('followUpSection').classList.add('hidden');
 
-            fetchResults();
+            sendMessage(query);
         }
 
         function goHome() {
             document.getElementById('resultsPage').classList.add('hidden');
             document.getElementById('homePage').classList.remove('hidden');
             document.getElementById('searchInput').value = '';
+            document.getElementById('messagesContainer').innerHTML = '';
             conversationHistory = [];
         }
 
-        async function fetchResults() {
+        function addUserBubble(text) {
+            const container = document.getElementById('messagesContainer');
+            const bubble = document.createElement('div');
+            bubble.className = 'flex justify-end';
+            bubble.innerHTML = `
+                <div class="bg-red-500 text-white px-4 py-3 rounded-2xl rounded-br-sm max-w-[80%]">
+                    ${escapeHtml(text)}
+                </div>
+            `;
+            container.appendChild(bubble);
+            scrollToBottom();
+        }
+
+        function addAssistantBubble() {
+            const container = document.getElementById('messagesContainer');
+            const wrapper = document.createElement('div');
+            wrapper.className = 'space-y-3';
+            
+            const bubble = document.createElement('div');
+            bubble.className = 'flex gap-3';
+            bubble.innerHTML = `
+                <div class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0 text-sm">🛒</div>
+                <div class="flex-1">
+                    <div class="text-gray-700 leading-relaxed" id="currentText"></div>
+                </div>
+            `;
+            wrapper.appendChild(bubble);
+            
+            const productsDiv = document.createElement('div');
+            productsDiv.className = 'grid grid-cols-1 md:grid-cols-2 gap-3 mt-4';
+            productsDiv.id = 'currentProducts';
+            wrapper.appendChild(productsDiv);
+            
+            const suggestionsDiv = document.createElement('div');
+            suggestionsDiv.className = 'flex flex-wrap gap-2 mt-3';
+            suggestionsDiv.id = 'currentSuggestions';
+            wrapper.appendChild(suggestionsDiv);
+            
+            container.appendChild(wrapper);
+            
+            currentAssistantBubble = bubble.querySelector('#currentText');
+            currentProductsContainer = productsDiv;
+            
+            scrollToBottom();
+            return { textEl: currentAssistantBubble, productsEl: productsDiv, suggestionsEl: suggestionsDiv };
+        }
+
+        async function sendMessage(text) {
+            conversationHistory.push({ role: 'user', content: text });
+            document.getElementById('followUpInput').value = '';
+            
+            addUserBubble(text);
+            const { textEl, productsEl, suggestionsEl } = addAssistantBubble();
+            
             let collectedText = '';
             let products = null;
             
-            // Show streaming UI
-            document.getElementById('loadingState').classList.add('hidden');
-            document.getElementById('resultsContent').classList.remove('hidden');
-            document.getElementById('summaryText').innerHTML = '<span class="streaming-cursor">|</span>';
-            document.getElementById('productCards').innerHTML = '';
-            document.getElementById('suggestions').innerHTML = '';
+            textEl.innerHTML = '<span class="streaming-cursor animate-pulse">|</span>';
             
             try {
                 const res = await fetch('/api/chat/stream', {
@@ -330,113 +350,81 @@
                                 
                                 if (data.type === 'text') {
                                     collectedText += data.content;
-                                    updateStreamingText(collectedText);
+                                    textEl.innerHTML = formatText(collectedText) + '<span class="streaming-cursor animate-pulse">|</span>';
+                                    scrollToBottom();
                                 } else if (data.type === 'searching') {
-                                    // Show searching indicator
-                                    document.getElementById('summaryText').innerHTML = 
-                                        formatText(collectedText) + 
-                                        '<div class="mt-4 flex items-center gap-2 text-gray-500"><svg class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg> Pesquisando: ' + data.query + '...</div>';
+                                    textEl.innerHTML = formatText(collectedText) + 
+                                        '<div class="mt-3 flex items-center gap-2 text-gray-400 text-sm"><svg class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg> Pesquisando produtos...</div>';
+                                    scrollToBottom();
                                 } else if (data.type === 'products') {
                                     products = data.content;
                                 } else if (data.type === 'done') {
                                     conversationHistory.push({ role: 'assistant', content: collectedText });
-                                    displayResults(collectedText, products);
+                                    textEl.innerHTML = formatText(collectedText);
+                                    if (products && products.length > 0) {
+                                        renderProducts(productsEl, products);
+                                    }
+                                    renderSuggestions(suggestionsEl);
+                                    scrollToBottom();
                                 } else if (data.type === 'error') {
-                                    displayError(data.content);
+                                    textEl.innerHTML = `<span class="text-red-500">${data.content}</span>`;
                                 }
-                            } catch (e) {
-                                // Skip invalid JSON
-                            }
+                            } catch (e) {}
                         }
                     }
                 }
             } catch (err) {
-                displayError('Erro de conexão. Tente novamente.');
+                textEl.innerHTML = '<span class="text-red-500">Erro de conexão. Tente novamente.</span>';
             }
         }
-        
-        function updateStreamingText(text) {
-            document.getElementById('summaryText').innerHTML = formatText(text) + '<span class="streaming-cursor animate-pulse">|</span>';
+
+        function renderProducts(container, products) {
+            container.innerHTML = products.slice(0, 4).map((p, i) => {
+                const link = p.buy_links?.[0];
+                const price = p.price?.match?.(/R\$[\d.,\s]+/)?.[0] || p.price || 'Ver preço';
+                const hasImg = p.image_url && !p.image_url.includes('logo');
+                
+                return `
+                    <div class="product-card bg-white rounded-xl overflow-hidden border border-gray-100 shadow-sm">
+                        <div class="relative">
+                            ${i === 0 ? '<span class="absolute top-2 left-2 bg-red-500 text-white text-[10px] px-2 py-0.5 rounded-full font-medium">⭐ MELHOR</span>' : ''}
+                            <div class="h-32 bg-gray-50 flex items-center justify-center p-3">
+                                ${hasImg 
+                                    ? `<img src="${p.image_url}" alt="${p.name}" class="max-h-full max-w-full object-contain" onerror="this.outerHTML='<span class=\\'text-4xl\\'>${getEmoji(p.name)}</span>'">`
+                                    : `<span class="text-4xl">${getEmoji(p.name)}</span>`}
+                            </div>
+                        </div>
+                        <div class="p-3">
+                            <p class="text-[10px] text-gray-400 uppercase">${link?.store || ''}</p>
+                            <h4 class="text-sm font-medium text-gray-900 line-clamp-2 mb-1">${p.name}</h4>
+                            <p class="text-base font-bold text-gray-900">${price}</p>
+                            ${link ? `<a href="${link.url}" target="_blank" class="mt-2 block w-full bg-gray-900 hover:bg-gray-800 text-white text-center py-2 rounded-lg text-xs font-medium transition">Ver na ${link.store}</a>` : ''}
+                        </div>
+                    </div>
+                `;
+            }).join('');
         }
-        
+
+        function renderSuggestions(container) {
+            const suggestions = ['Qual é o melhor?', 'Tem opção mais barata?', 'Qual você recomenda?'];
+            container.innerHTML = suggestions.map(s => 
+                `<button onclick="sendMessage('${s}')" class="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 rounded-full text-xs text-gray-600 transition">${s}</button>`
+            ).join('');
+        }
+
         function formatText(text) {
             return text
                 .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
                 .replace(/\n/g, '<br>');
         }
 
-        function displayResults(text, products) {
-            document.getElementById('loadingState').classList.add('hidden');
-            document.getElementById('resultsContent').classList.remove('hidden');
-            document.getElementById('followUpSection').classList.remove('hidden');
-
-            // Remove streaming cursor and show final text
-            document.getElementById('summaryText').innerHTML = formatText(text);
-
-            const cardsContainer = document.getElementById('productCards');
-            cardsContainer.innerHTML = '';
-            
-            if (products && products.length > 0) {
-                products.forEach((p, i) => {
-                    const link = p.buy_links?.[0];
-                    const price = p.price?.match?.(/R\$[\d.,\s]+/)?.[0] || p.price || 'Ver preço';
-                    const hasImg = p.image_url && !p.image_url.includes('logo');
-                    
-                    const card = document.createElement('div');
-                    card.className = 'product-card bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm';
-                    card.innerHTML = `
-                        <div class="relative">
-                            ${i === 0 ? '<span class="absolute top-3 left-3 bg-red-500 text-white text-xs px-3 py-1 rounded-full font-medium">⭐ MELHOR ESCOLHA</span>' : ''}
-                            <div class="h-48 bg-gray-50 flex items-center justify-center p-4">
-                                ${hasImg 
-                                    ? `<img src="${p.image_url}" alt="${p.name}" class="max-h-full max-w-full object-contain" onerror="this.outerHTML='<span class=\\'text-5xl\\'>${getEmoji(p.name)}</span>'">`
-                                    : `<span class="text-5xl">${getEmoji(p.name)}</span>`}
-                            </div>
-                        </div>
-                        <div class="p-4">
-                            <p class="text-xs text-gray-400 uppercase tracking-wide mb-1 flex items-center gap-1">
-                                <span class="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
-                                ${link?.store || 'Loja'}
-                            </p>
-                            <h3 class="font-semibold text-gray-900 mb-2 line-clamp-2">${p.name}</h3>
-                            <div class="flex items-center justify-between">
-                                <span class="text-xl font-bold text-gray-900">${price}</span>
-                                <button class="text-gray-300 hover:text-red-500 transition">
-                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
-                                    </svg>
-                                </button>
-                            </div>
-                            ${link ? `<a href="${link.url}" target="_blank" class="mt-3 block w-full bg-gray-900 hover:bg-gray-800 text-white text-center py-2.5 rounded-xl text-sm font-medium transition">Ver na ${link.store}</a>` : ''}
-                        </div>
-                    `;
-                    cardsContainer.appendChild(card);
-                });
-            }
-
-            const suggestionsContainer = document.getElementById('suggestions');
-            const suggestions = generateSuggestions(currentQuery, products);
-            suggestionsContainer.innerHTML = suggestions.map(s => 
-                `<button onclick="sendFollowUp('${s}')" class="px-4 py-2 bg-white border border-gray-200 rounded-full text-sm text-gray-600 hover:border-gray-300 hover:bg-gray-50 transition">${s}</button>`
-            ).join('');
+        function escapeHtml(text) {
+            return text.replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
         }
 
-        function displayError(message) {
-            document.getElementById('loadingState').classList.add('hidden');
-            document.getElementById('resultsContent').classList.remove('hidden');
-            document.getElementById('summaryText').innerHTML = `<p class="text-red-500">${message}</p>`;
-            document.getElementById('productCards').innerHTML = '';
-            document.getElementById('suggestions').innerHTML = '';
-        }
-
-        async function sendFollowUp(query) {
-            conversationHistory.push({ role: 'user', content: query });
-            document.getElementById('followUpInput').value = '';
-            document.getElementById('queryTitle').textContent = query;
-            document.getElementById('productCards').innerHTML = '';
-            document.getElementById('suggestions').innerHTML = '';
-            
-            await fetchResults();
+        function scrollToBottom() {
+            const chat = document.getElementById('chatMessages');
+            chat.scrollTop = chat.scrollHeight;
         }
 
         function getEmoji(name) {
@@ -451,20 +439,6 @@
             if (n.includes('tênis') || n.includes('tenis')) return '👟';
             if (n.includes('smartwatch') || n.includes('relógio')) return '⌚';
             return '📦';
-        }
-
-        function generateSuggestions(query, products) {
-            const q = query.toLowerCase();
-            if (q.includes('fone')) {
-                return ['Qual tem melhor cancelamento de ruído?', 'Alguma opção da Sony?', 'Qual dura mais a bateria?'];
-            }
-            if (q.includes('notebook')) {
-                return ['Qual é melhor pra jogos?', 'Algum com SSD de 512GB?', 'Qual tem melhor tela?'];
-            }
-            if (q.includes('cadeira')) {
-                return ['Qual é mais confortável?', 'Alguma com apoio lombar?', 'Qual aguenta mais peso?'];
-            }
-            return ['Qual tem a melhor avaliação?', 'Alguma opção mais barata?', 'Qual você recomenda?'];
         }
     </script>
 </body>
