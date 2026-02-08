@@ -5,238 +5,364 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Personal Shopper AI</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Inter', sans-serif; }
-        .chat-bubble { animation: bubbleIn 0.3s ease-out; }
-        @keyframes bubbleIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .typing span { animation: bounce 1.4s infinite ease-in-out; }
-        .typing span:nth-child(2) { animation-delay: 0.16s; }
-        .typing span:nth-child(3) { animation-delay: 0.32s; }
-        @keyframes bounce { 0%, 80%, 100% { transform: scale(0.8); opacity: 0.5; } 40% { transform: scale(1); opacity: 1; } }
-        .product-card { transition: all 0.2s; }
-        .product-card:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
-        .markdown a { color: #dc2626; text-decoration: underline; }
-        .markdown strong { font-weight: 600; }
+        .masonry { columns: 4; column-gap: 16px; }
+        .masonry-item { break-inside: avoid; margin-bottom: 16px; }
+        @media (max-width: 1024px) { .masonry { columns: 3; } }
+        @media (max-width: 768px) { .masonry { columns: 2; } }
+        .fade-in { animation: fadeIn 0.4s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .search-input:focus { box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2); }
+        .product-card { transition: transform 0.2s, box-shadow 0.2s; }
+        .product-card:hover { transform: translateY(-4px); box-shadow: 0 12px 24px rgba(0,0,0,0.1); }
+        .inspiration-item { transition: transform 0.2s; cursor: pointer; }
+        .inspiration-item:hover { transform: scale(1.02); }
     </style>
 </head>
-<body class="bg-gray-50 min-h-screen flex flex-col">
-    <!-- Header -->
-    <header class="bg-white border-b border-gray-100 sticky top-0 z-50">
-        <div class="max-w-3xl mx-auto px-4 py-3 flex items-center gap-3">
-            <a href="/" onclick="location.reload()" class="flex items-center gap-2">
-                <span class="text-2xl">🛒</span>
-                <div>
-                    <h1 class="font-bold text-lg text-gray-900 leading-tight">Personal Shopper</h1>
-                    <p class="text-xs text-gray-500">Seu assistente de compras</p>
-                </div>
-            </a>
-        </div>
-    </header>
+<body class="bg-gray-50 min-h-screen">
 
-    <!-- Chat Container -->
-    <main id="chatContainer" class="flex-1 overflow-y-auto">
-        <div class="max-w-3xl mx-auto px-4 py-6">
-            <!-- Welcome -->
-            <div id="welcome" class="text-center py-12">
-                <div class="text-6xl mb-4">🛒</div>
-                <h2 class="text-2xl font-bold text-gray-900 mb-2">Olá! Sou seu personal shopper</h2>
-                <p class="text-gray-500 mb-8 max-w-md mx-auto">Me conta o que você está procurando e eu ajudo a encontrar as melhores opções!</p>
+    <!-- HOME PAGE -->
+    <div id="homePage">
+        <!-- Header -->
+        <header class="bg-white border-b border-gray-100">
+            <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+                <div class="flex items-center gap-8">
+                    <a href="/" class="flex items-center gap-2">
+                        <span class="text-2xl">🛒</span>
+                        <span class="font-bold text-xl text-gray-900">PersonalShopper</span>
+                    </a>
+                    <nav class="hidden md:flex items-center gap-6 text-sm text-gray-600">
+                        <a href="#" class="hover:text-gray-900">Como funciona</a>
+                        <a href="#" class="hover:text-gray-900">Sobre</a>
+                    </nav>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button class="text-sm text-gray-600 hover:text-gray-900 px-3 py-2">Entrar</button>
+                    <button class="text-sm bg-gray-900 text-white px-4 py-2 rounded-lg hover:bg-gray-800">Criar conta</button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Hero -->
+        <section class="pt-16 pb-8 px-4">
+            <div class="max-w-2xl mx-auto text-center">
+                <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-2">Descubra sua próxima</h1>
+                <h1 class="text-4xl md:text-5xl font-bold text-red-500 mb-8">melhor compra com IA</h1>
                 
-                <div class="flex flex-wrap justify-center gap-2 mb-8">
-                    <button onclick="send('Quero um fone bluetooth bom, o que você recomenda?')" class="px-4 py-2 bg-white hover:bg-gray-50 rounded-full text-sm text-gray-700 border border-gray-200 shadow-sm transition">🎧 Fone bluetooth</button>
-                    <button onclick="send('Preciso de um monitor pra programar, me ajuda?')" class="px-4 py-2 bg-white hover:bg-gray-50 rounded-full text-sm text-gray-700 border border-gray-200 shadow-sm transition">🖥️ Monitor</button>
-                    <button onclick="send('Qual notebook você indica até 4000 reais?')" class="px-4 py-2 bg-white hover:bg-gray-50 rounded-full text-sm text-gray-700 border border-gray-200 shadow-sm transition">💻 Notebook</button>
+                <!-- Search Bar -->
+                <form id="searchForm" class="relative max-w-xl mx-auto">
+                    <input 
+                        type="text" 
+                        id="searchInput"
+                        placeholder="fone bluetooth até 500 reais"
+                        class="search-input w-full px-5 py-4 pr-14 text-lg border border-gray-200 rounded-full focus:outline-none focus:border-red-400 bg-white"
+                    >
+                    <button type="submit" class="absolute right-2 top-1/2 -translate-y-1/2 bg-red-500 hover:bg-red-600 text-white w-10 h-10 rounded-full flex items-center justify-center transition">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+                        </svg>
+                    </button>
+                </form>
+            </div>
+        </section>
+
+        <!-- Popular Searches -->
+        <section class="pb-8 px-4">
+            <div class="max-w-4xl mx-auto">
+                <p class="text-center text-xs text-gray-400 uppercase tracking-wider mb-4">Buscas Populares</p>
+                <div class="flex flex-wrap justify-center gap-2">
+                    <button onclick="search('Notebook gamer barato')" class="px-4 py-2 bg-white border border-gray-200 rounded-full text-sm text-gray-700 hover:border-gray-300 hover:bg-gray-50 transition">Notebook gamer barato</button>
+                    <button onclick="search('Tênis corrida performance')" class="px-4 py-2 bg-white border border-gray-200 rounded-full text-sm text-gray-700 hover:border-gray-300 hover:bg-gray-50 transition">Tênis corrida performance</button>
+                    <button onclick="search('Smartwatch com GPS')" class="px-4 py-2 bg-white border border-gray-200 rounded-full text-sm text-gray-700 hover:border-gray-300 hover:bg-gray-50 transition">Smartwatch com GPS</button>
+                    <button onclick="search('Cadeira ergonômica')" class="px-4 py-2 bg-white border border-gray-200 rounded-full text-sm text-gray-700 hover:border-gray-300 hover:bg-gray-50 transition">Cadeira ergonômica</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Inspiration Grid -->
+        <section class="px-4 pb-16">
+            <div class="max-w-6xl mx-auto">
+                <div class="masonry" id="inspirationGrid">
+                    <!-- Items will be populated by JS -->
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- RESULTS PAGE -->
+    <div id="resultsPage" class="hidden">
+        <!-- Header -->
+        <header class="bg-white border-b border-gray-100 sticky top-0 z-50">
+            <div class="max-w-4xl mx-auto px-4 py-3 flex items-center gap-4">
+                <button onclick="goHome()" class="text-gray-400 hover:text-gray-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                    </svg>
+                </button>
+                <a href="/" class="flex items-center gap-2">
+                    <span class="text-xl">🛒</span>
+                    <span class="font-bold text-lg text-gray-900">PersonalShopper</span>
+                </a>
+                <div class="flex-1"></div>
+                <button class="text-gray-400 hover:text-gray-600">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                </button>
+            </div>
+        </header>
+
+        <!-- Results Content -->
+        <main class="max-w-4xl mx-auto px-4 py-8">
+            <!-- Query Title -->
+            <h1 id="queryTitle" class="text-2xl md:text-3xl font-bold text-gray-900 text-center mb-2"></h1>
+            <p class="text-center text-sm text-gray-400 mb-8">
+                <span class="inline-flex items-center gap-1">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                    </svg>
+                    BUSCA REALIZADA
+                </span>
+            </p>
+
+            <!-- Loading State -->
+            <div id="loadingState" class="text-center py-12">
+                <div class="inline-flex items-center gap-2 text-gray-500">
+                    <svg class="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Buscando os melhores produtos...
                 </div>
             </div>
 
-            <!-- Messages -->
-            <div id="messages" class="space-y-4 pb-4"></div>
-        </div>
-    </main>
+            <!-- Results Content -->
+            <div id="resultsContent" class="hidden fade-in">
+                <!-- Summary -->
+                <div id="summaryText" class="text-gray-700 leading-relaxed mb-8"></div>
 
-    <!-- Input -->
-    <div class="bg-white border-t border-gray-200 p-4 sticky bottom-0">
-        <form id="chatForm" class="max-w-3xl mx-auto flex gap-3">
-            <input 
-                type="text" 
-                id="input" 
-                placeholder="Digite sua mensagem..." 
-                class="flex-1 px-4 py-3 bg-gray-100 rounded-xl focus:bg-white focus:ring-2 focus:ring-red-500 transition outline-none"
-                autocomplete="off"
-            >
-            <button type="submit" id="sendBtn" class="bg-red-500 hover:bg-red-600 disabled:bg-gray-300 text-white px-6 py-3 rounded-xl font-medium transition">
-                Enviar
-            </button>
-        </form>
+                <!-- Product Cards -->
+                <div id="productCards" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8"></div>
+
+                <!-- Follow-up Suggestions -->
+                <div id="suggestions" class="flex flex-wrap gap-2 mb-8"></div>
+            </div>
+
+            <!-- Follow-up Input -->
+            <div id="followUpSection" class="hidden border-t border-gray-200 pt-6">
+                <form id="followUpForm" class="relative max-w-2xl mx-auto">
+                    <input 
+                        type="text" 
+                        id="followUpInput"
+                        placeholder="Pergunte mais sobre os modelos..."
+                        class="w-full px-5 py-3 pr-14 border border-gray-200 rounded-full focus:outline-none focus:border-red-400 bg-white"
+                    >
+                    <button type="submit" class="absolute right-2 top-1/2 -translate-y-1/2 bg-red-500 hover:bg-red-600 text-white w-9 h-9 rounded-full flex items-center justify-center transition">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+                        </svg>
+                    </button>
+                </form>
+            </div>
+        </main>
     </div>
 
     <script>
-        const messagesEl = document.getElementById('messages');
-        const welcomeEl = document.getElementById('welcome');
-        const input = document.getElementById('input');
-        const sendBtn = document.getElementById('sendBtn');
-        const chatForm = document.getElementById('chatForm');
-        
-        let history = [];
-        let isLoading = false;
+        // Inspiration items for home grid
+        const inspirationItems = [
+            { img: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400', query: 'fone bluetooth premium', h: 'h-64' },
+            { img: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400', query: 'mochila notebook', h: 'h-48' },
+            { img: 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=400', query: 'sofá moderno', h: 'h-56' },
+            { img: 'https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=400', query: 'óculos de sol', h: 'h-40' },
+            { img: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400', query: 'tênis esportivo', h: 'h-52' },
+            { img: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400', query: 'smartwatch', h: 'h-44' },
+            { img: 'https://images.unsplash.com/photo-1585386959984-a4155224a1ad?w=400', query: 'perfume importado', h: 'h-60' },
+            { img: 'https://images.unsplash.com/photo-1598327105666-5b89351aff97?w=400', query: 'smartphone custo benefício', h: 'h-48' },
+            { img: 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400', query: 'macbook', h: 'h-44' },
+            { img: 'https://images.unsplash.com/photo-1590736969955-71cc94901144?w=400', query: 'cadeira gamer', h: 'h-56' },
+            { img: 'https://images.unsplash.com/photo-1511499767150-a48a237f0083?w=400', query: 'óculos aviador', h: 'h-40' },
+            { img: 'https://images.unsplash.com/photo-1600185365926-3a2ce3cdb9eb?w=400', query: 'tênis casual', h: 'h-52' },
+        ];
 
-        function scrollToBottom() {
-            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+        // Populate inspiration grid
+        const grid = document.getElementById('inspirationGrid');
+        inspirationItems.forEach(item => {
+            const div = document.createElement('div');
+            div.className = `masonry-item inspiration-item rounded-2xl overflow-hidden bg-gray-100 ${item.h}`;
+            div.onclick = () => search(item.query);
+            div.innerHTML = `<img src="${item.img}" alt="${item.query}" class="w-full h-full object-cover">`;
+            grid.appendChild(div);
+        });
+
+        // State
+        let conversationHistory = [];
+        let currentQuery = '';
+
+        // Search form
+        document.getElementById('searchForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const query = document.getElementById('searchInput').value.trim();
+            if (query) search(query);
+        });
+
+        // Follow-up form
+        document.getElementById('followUpForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const query = document.getElementById('followUpInput').value.trim();
+            if (query) sendFollowUp(query);
+        });
+
+        function search(query) {
+            currentQuery = query;
+            conversationHistory = [{ role: 'user', content: query }];
+            
+            // Show results page
+            document.getElementById('homePage').classList.add('hidden');
+            document.getElementById('resultsPage').classList.remove('hidden');
+            document.getElementById('queryTitle').textContent = query;
+            document.getElementById('loadingState').classList.remove('hidden');
+            document.getElementById('resultsContent').classList.add('hidden');
+            document.getElementById('followUpSection').classList.add('hidden');
+
+            fetchResults();
         }
 
-        function hideWelcome() {
-            welcomeEl.classList.add('hidden');
+        function goHome() {
+            document.getElementById('resultsPage').classList.add('hidden');
+            document.getElementById('homePage').classList.remove('hidden');
+            document.getElementById('searchInput').value = '';
+            conversationHistory = [];
         }
 
-        function addMessage(role, content, products = null) {
-            hideWelcome();
-            const isUser = role === 'user';
-            
-            const bubble = document.createElement('div');
-            bubble.className = `chat-bubble flex ${isUser ? 'justify-end' : 'gap-3'}`;
-            
-            // Parse markdown-like content
-            let html = content
-                .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-                .replace(/\[(.+?)\]\((.+?)\)/g, '<a href="$2" target="_blank">$1</a>')
-                .replace(/\n/g, '<br>');
-            
-            if (isUser) {
-                bubble.innerHTML = `<div class="bg-red-500 text-white px-4 py-3 rounded-2xl rounded-br-sm max-w-[85%]">${html}</div>`;
-            } else {
-                let productsHtml = '';
-                if (products && products.length > 0) {
-                    productsHtml = renderProducts(products);
-                }
-                
-                bubble.innerHTML = `
-                    <div class="w-9 h-9 rounded-full bg-red-100 flex items-center justify-center flex-shrink-0 text-lg">🛒</div>
-                    <div class="flex-1">
-                        <div class="bg-white border border-gray-100 shadow-sm px-4 py-3 rounded-2xl rounded-tl-sm markdown">${html}</div>
-                        ${productsHtml}
-                    </div>
-                `;
-            }
-            
-            messagesEl.appendChild(bubble);
-            scrollToBottom();
-        }
-
-        function addTyping() {
-            hideWelcome();
-            const bubble = document.createElement('div');
-            bubble.id = 'typing';
-            bubble.className = 'chat-bubble flex gap-3';
-            bubble.innerHTML = `
-                <div class="w-9 h-9 rounded-full bg-red-100 flex items-center justify-center flex-shrink-0 text-lg">🛒</div>
-                <div class="bg-white border border-gray-100 shadow-sm px-4 py-4 rounded-2xl rounded-tl-sm">
-                    <div class="typing flex gap-1">
-                        <span class="w-2 h-2 bg-gray-400 rounded-full"></span>
-                        <span class="w-2 h-2 bg-gray-400 rounded-full"></span>
-                        <span class="w-2 h-2 bg-gray-400 rounded-full"></span>
-                    </div>
-                </div>
-            `;
-            messagesEl.appendChild(bubble);
-            scrollToBottom();
-        }
-
-        function removeTyping() {
-            document.getElementById('typing')?.remove();
-        }
-
-        function getEmoji(name) {
-            const n = name.toLowerCase();
-            if (n.includes('fone') || n.includes('buds') || n.includes('headphone')) return '🎧';
-            if (n.includes('monitor')) return '🖥️';
-            if (n.includes('notebook') || n.includes('laptop')) return '💻';
-            if (n.includes('teclado')) return '⌨️';
-            if (n.includes('mouse')) return '🖱️';
-            if (n.includes('cadeira')) return '🪑';
-            if (n.includes('phone') || n.includes('celular')) return '📱';
-            return '📦';
-        }
-
-        function renderProducts(products) {
-            const colors = ['bg-blue-50', 'bg-pink-50', 'bg-purple-50', 'bg-green-50'];
-            return `
-                <div class="grid grid-cols-2 gap-2 mt-3">
-                    ${products.slice(0, 4).map((p, i) => {
-                        const link = p.buy_links?.[0];
-                        const review = p.review_videos?.[0];
-                        const price = p.price?.match?.(/R\$[\d.,\s]+/)?.[0] || p.price || p.price_range || '';
-                        const hasImg = p.image_url && !p.image_url.includes('logo');
-                        return `
-                        <div class="product-card bg-white rounded-xl border border-gray-100 overflow-hidden shadow-sm">
-                            <div class="${colors[i % 4]} h-24 flex items-center justify-center relative">
-                                ${i === 0 ? '<span class="absolute top-1 left-1 bg-green-500 text-white text-[10px] px-1.5 py-0.5 rounded-full">⭐ Top</span>' : ''}
-                                ${hasImg 
-                                    ? `<img src="${p.image_url}" class="max-h-20 object-contain" onerror="this.outerHTML='<span class=\\'text-3xl\\'>${getEmoji(p.name)}</span>'">`
-                                    : `<span class="text-3xl">${getEmoji(p.name)}</span>`}
-                            </div>
-                            <div class="p-2">
-                                <p class="text-[10px] text-gray-500">${link?.store || ''}</p>
-                                <h4 class="text-xs font-semibold text-gray-900 line-clamp-2 leading-tight">${p.name}</h4>
-                                <p class="text-sm font-bold text-gray-900 mt-1">${price}</p>
-                                <div class="flex gap-1 mt-2">
-                                    ${link ? `<a href="${link.url}" target="_blank" class="flex-1 bg-red-500 hover:bg-red-600 text-white text-center py-1.5 rounded-lg text-xs font-medium">Comprar</a>` : ''}
-                                    ${review ? `<a href="${review.url}" target="_blank" class="bg-gray-100 hover:bg-gray-200 py-1.5 px-2 rounded-lg text-xs">▶️</a>` : ''}
-                                </div>
-                            </div>
-                        </div>`;
-                    }).join('')}
-                </div>
-            `;
-        }
-
-        async function send(text) {
-            if (!text?.trim() || isLoading) return;
-            
-            isLoading = true;
-            sendBtn.disabled = true;
-            input.value = '';
-            
-            addMessage('user', text);
-            history.push({ role: 'user', content: text });
-            
-            addTyping();
-
+        async function fetchResults() {
             try {
                 const res = await fetch('/api/chat', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ messages: history, language: 'pt-BR' })
+                    body: JSON.stringify({ messages: conversationHistory, language: 'pt-BR' })
                 });
-                
-                removeTyping();
                 
                 const data = await res.json();
                 
                 if (data.response) {
-                    addMessage('assistant', data.response, data.products);
-                    history.push({ role: 'assistant', content: data.response });
-                } else if (data.detail) {
-                    addMessage('assistant', `Ops, tive um problema: ${data.detail}`);
+                    conversationHistory.push({ role: 'assistant', content: data.response });
+                    displayResults(data.response, data.products);
                 } else {
-                    addMessage('assistant', 'Desculpa, não entendi. Pode reformular?');
+                    displayError(data.detail || 'Erro ao buscar produtos');
                 }
             } catch (err) {
-                removeTyping();
-                addMessage('assistant', 'Ops, erro de conexão. Tenta de novo?');
+                displayError('Erro de conexão. Tente novamente.');
             }
-            
-            isLoading = false;
-            sendBtn.disabled = false;
-            input.focus();
         }
 
-        chatForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            send(input.value);
-        });
+        function displayResults(text, products) {
+            document.getElementById('loadingState').classList.add('hidden');
+            document.getElementById('resultsContent').classList.remove('hidden');
+            document.getElementById('followUpSection').classList.remove('hidden');
 
-        input.focus();
+            // Summary - convert markdown-like to HTML
+            let html = text
+                .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\n/g, '<br>');
+            document.getElementById('summaryText').innerHTML = html;
+
+            // Product cards
+            const cardsContainer = document.getElementById('productCards');
+            cardsContainer.innerHTML = '';
+            
+            if (products && products.length > 0) {
+                products.forEach((p, i) => {
+                    const link = p.buy_links?.[0];
+                    const price = p.price?.match?.(/R\$[\d.,\s]+/)?.[0] || p.price || 'Ver preço';
+                    const hasImg = p.image_url && !p.image_url.includes('logo');
+                    
+                    const card = document.createElement('div');
+                    card.className = 'product-card bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm';
+                    card.innerHTML = `
+                        <div class="relative">
+                            ${i === 0 ? '<span class="absolute top-3 left-3 bg-red-500 text-white text-xs px-3 py-1 rounded-full font-medium">⭐ MELHOR ESCOLHA</span>' : ''}
+                            <div class="h-48 bg-gray-50 flex items-center justify-center p-4">
+                                ${hasImg 
+                                    ? `<img src="${p.image_url}" alt="${p.name}" class="max-h-full max-w-full object-contain">`
+                                    : `<span class="text-5xl">${getEmoji(p.name)}</span>`}
+                            </div>
+                        </div>
+                        <div class="p-4">
+                            <p class="text-xs text-gray-400 uppercase tracking-wide mb-1">${link?.store || 'Loja'}</p>
+                            <h3 class="font-semibold text-gray-900 mb-2 line-clamp-2">${p.name}</h3>
+                            <div class="flex items-center justify-between">
+                                <span class="text-xl font-bold text-gray-900">${price}</span>
+                                <button class="text-gray-300 hover:text-red-500 transition">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                                    </svg>
+                                </button>
+                            </div>
+                            ${link ? `<a href="${link.url}" target="_blank" class="mt-3 block w-full bg-gray-900 hover:bg-gray-800 text-white text-center py-2.5 rounded-xl text-sm font-medium transition">Ver na ${link.store}</a>` : ''}
+                        </div>
+                    `;
+                    cardsContainer.appendChild(card);
+                });
+            }
+
+            // Suggestions
+            const suggestionsContainer = document.getElementById('suggestions');
+            const suggestions = generateSuggestions(currentQuery, products);
+            suggestionsContainer.innerHTML = suggestions.map(s => 
+                `<button onclick="sendFollowUp('${s}')" class="px-4 py-2 bg-white border border-gray-200 rounded-full text-sm text-gray-600 hover:border-gray-300 hover:bg-gray-50 transition">${s}</button>`
+            ).join('');
+        }
+
+        function displayError(message) {
+            document.getElementById('loadingState').classList.add('hidden');
+            document.getElementById('resultsContent').classList.remove('hidden');
+            document.getElementById('summaryText').innerHTML = `<p class="text-red-500">${message}</p>`;
+            document.getElementById('productCards').innerHTML = '';
+            document.getElementById('suggestions').innerHTML = '';
+        }
+
+        async function sendFollowUp(query) {
+            conversationHistory.push({ role: 'user', content: query });
+            document.getElementById('followUpInput').value = '';
+            document.getElementById('queryTitle').textContent = query;
+            document.getElementById('loadingState').classList.remove('hidden');
+            document.getElementById('resultsContent').classList.add('hidden');
+            
+            await fetchResults();
+        }
+
+        function getEmoji(name) {
+            const n = name.toLowerCase();
+            if (n.includes('fone') || n.includes('buds') || n.includes('headphone') || n.includes('airpod')) return '🎧';
+            if (n.includes('monitor')) return '🖥️';
+            if (n.includes('notebook') || n.includes('laptop') || n.includes('macbook')) return '💻';
+            if (n.includes('teclado')) return '⌨️';
+            if (n.includes('mouse')) return '🖱️';
+            if (n.includes('cadeira')) return '🪑';
+            if (n.includes('phone') || n.includes('celular') || n.includes('iphone') || n.includes('galaxy')) return '📱';
+            if (n.includes('tênis') || n.includes('tenis')) return '👟';
+            if (n.includes('smartwatch') || n.includes('relógio')) return '⌚';
+            return '📦';
+        }
+
+        function generateSuggestions(query, products) {
+            const base = [
+                'Qual tem a melhor bateria?',
+                'Alguma opção mais barata?',
+                'Qual é à prova d\'água?',
+            ];
+            
+            if (query.toLowerCase().includes('fone')) {
+                return ['Qual tem melhor cancelamento de ruído?', 'Alguma opção da Sony?', 'Qual dura mais a bateria?'];
+            }
+            if (query.toLowerCase().includes('notebook')) {
+                return ['Qual é melhor pra jogos?', 'Algum com SSD de 512GB?', 'Qual tem melhor tela?'];
+            }
+            
+            return base;
+        }
     </script>
 </body>
 </html>
