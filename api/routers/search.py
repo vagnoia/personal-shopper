@@ -149,31 +149,57 @@ async def find_youtube_reviews(product_name: str) -> List[dict]:
         pass
     return videos
 
-async def find_product_image(product_name: str) -> Optional[str]:
-    """Find product image from web search results (more reliable than images API)"""
+async def extract_og_image(url: str) -> Optional[str]:
+    """Extract og:image from a product page"""
     try:
-        # Use web search and extract og:image or product images from results
-        data = await brave_search(f"{product_name} site:amazon.com.br OR site:mercadolivre.com.br", count=3)
-        for r in data.get("web", {}).get("results", []):
-            # Try to get thumbnail from search result
-            thumb = r.get("thumbnail", {}).get("src")
-            if thumb and "http" in thumb:
-                return thumb
-        
-        # Fallback: try images API
+        async with httpx.AsyncClient() as client:
+            resp = await client.get(url, timeout=8.0, follow_redirects=True, headers={
+                "User-Agent": "Mozilla/5.0 (compatible; PersonalShopperBot/1.0)"
+            })
+            if resp.status_code == 200:
+                html = resp.text[:50000]  # First 50KB
+                # Look for og:image
+                import re
+                patterns = [
+                    r'<meta[^>]*property=["\']og:image["\'][^>]*content=["\']([^"\']+)["\']',
+                    r'<meta[^>]*content=["\']([^"\']+)["\'][^>]*property=["\']og:image["\']',
+                    r'"image":\s*"(https?://[^"]+)"',  # JSON-LD
+                ]
+                for pattern in patterns:
+                    match = re.search(pattern, html, re.IGNORECASE)
+                    if match:
+                        img = match.group(1)
+                        # Skip logos and icons
+                        if img and "logo" not in img.lower() and "icon" not in img.lower():
+                            return img
+    except Exception:
+        pass
+    return None
+
+async def find_product_image(product_name: str, buy_links: List[dict]) -> Optional[str]:
+    """Find product image - prefer og:image from buy links"""
+    # Strategy 1: Extract og:image from the first buy link
+    for link in buy_links[:2]:
+        url = link.get("url", "")
+        if url:
+            img = await extract_og_image(url)
+            if img:
+                return img
+    
+    # Strategy 2: Fallback to Brave Images API
+    try:
         async with httpx.AsyncClient() as client:
             resp = await client.get(
                 "https://api.search.brave.com/res/v1/images/search",
                 headers={"X-Subscription-Token": BRAVE_API_KEY},
-                params={"q": f"{product_name}", "count": 5, "safesearch": "moderate"},
-                timeout=10.0
+                params={"q": f"{product_name} produto oficial", "count": 3},
+                timeout=8.0
             )
             if resp.status_code == 200:
                 data = resp.json()
                 for r in data.get("results", []):
-                    # Brave Images API structure
                     img = r.get("thumbnail", {}).get("src") or r.get("properties", {}).get("url")
-                    if img and "http" in img:
+                    if img and "logo" not in img.lower():
                         return img
     except Exception:
         pass
@@ -253,7 +279,7 @@ async def search_products(request: SearchRequest):
                 continue
             
             reviews = await find_youtube_reviews(name)
-            image = await find_product_image(name)
+            image = await find_product_image(name, links)
             
             # Use first link's price if no price in rec
             price = rec.get("price_range", "")
