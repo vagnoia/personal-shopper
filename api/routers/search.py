@@ -45,7 +45,7 @@ class SearchResponse(BaseModel):
     search_time_ms: int
     language: str
 
-async def search_brave(query: str, country: str = "BR", count: int = 10) -> dict:
+async def search_brave(query: str, country: str = "BR", count: int = 20) -> dict:
     async with httpx.AsyncClient() as client:
         response = await client.get(
             "https://api.search.brave.com/res/v1/web/search",
@@ -55,6 +55,32 @@ async def search_brave(query: str, country: str = "BR", count: int = 10) -> dict
         )
         response.raise_for_status()
         return response.json()
+
+async def search_product_links(product_name: str) -> List[dict]:
+    """Search for specific product buy links"""
+    try:
+        query = f'"{product_name}" comprar site:amazon.com.br OR site:mercadolivre.com.br OR site:magazineluiza.com.br'
+        async with httpx.AsyncClient() as client:
+            response = await client.get(
+                "https://api.search.brave.com/res/v1/web/search",
+                headers={"X-Subscription-Token": BRAVE_API_KEY},
+                params={"q": query, "count": 5},
+                timeout=10.0
+            )
+            response.raise_for_status()
+            data = response.json()
+        
+        links = []
+        for result in data.get("web", {}).get("results", []):
+            url = result.get("url", "")
+            # Filter for actual product pages, not search/list pages
+            if any(x in url for x in ["/dp/", "/p/", "/produto/", "MLB-", "/item/"]) and \
+               not any(x in url for x in ["?k=", "/s?", "lista.", "/search"]):
+                store = "Amazon" if "amazon" in url else "Mercado Livre" if "mercadolivre" in url else "Magazine Luiza" if "magazineluiza" in url else "Loja"
+                links.append({"store": store, "url": url, "price": None})
+        return links[:2]
+    except:
+        return []
 
 async def search_youtube_reviews(product_name: str, language: str = "pt-BR") -> List[dict]:
     try:
@@ -145,6 +171,15 @@ async def search_products(request: SearchRequest):
         
         enriched = []
         for rec in recommendations[:5]:
+            # Enrich with real product links
+            try:
+                real_links = await search_product_links(rec.get("name", ""))
+                if real_links:
+                    rec["buy_links"] = real_links + rec.get("buy_links", [])[:1]
+            except:
+                pass
+            
+            # Enrich with YouTube reviews
             try:
                 videos = await search_youtube_reviews(rec.get("name", ""), request.language)
                 rec["review_videos"] = videos if videos else rec.get("review_videos", [])
