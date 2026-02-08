@@ -137,16 +137,12 @@
     <div id="resultsPage" class="hidden min-h-screen bg-white flex flex-col">
         <!-- Header -->
         <header class="bg-white/80 backdrop-blur-sm sticky top-0 z-50">
-            <div class="max-w-7xl mx-auto px-6 py-4 flex items-center gap-4">
-                <button onclick="goHome()" class="text-gray-400 hover:text-gray-600">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-                    </svg>
-                </button>
+            <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
                 <a href="/" onclick="goHome(); return false;" class="flex items-center gap-2">
                     <span class="text-xl">🛒</span>
                     <span class="font-bold text-lg text-gray-900">PersonalShopper</span>
                 </a>
+                <button onclick="goHome()" class="text-sm bg-red-500 text-white px-4 py-2 rounded-full hover:bg-red-600 font-medium">Nova busca</button>
             </div>
         </header>
 
@@ -402,10 +398,10 @@
         }
 
         function scrollToBottom() {
-            const chat = document.getElementById('chatMessages');
-            setTimeout(() => {
-                chat.scrollTo({ top: chat.scrollHeight, behavior: 'smooth' });
-            }, 50);
+            requestAnimationFrame(() => {
+                const chat = document.getElementById('chatMessages');
+                chat.scrollTop = chat.scrollHeight;
+            });
         }
 
         function getEmoji(name) {
