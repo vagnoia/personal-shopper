@@ -151,7 +151,7 @@
     </div>
 
     <!-- RESULTS PAGE -->
-    <div id="resultsPage" class="hidden min-h-screen bg-gray-50">
+    <div id="resultsPage" class="hidden min-h-screen bg-white">
         <!-- Header -->
         <header class="bg-white border-b border-gray-100 sticky top-0 z-50">
             <div class="max-w-4xl mx-auto px-4 py-3 flex items-center gap-4">
@@ -174,7 +174,7 @@
         </header>
 
         <!-- Results Content -->
-        <main class="max-w-4xl mx-auto px-4 py-8">
+        <main class="max-w-4xl mx-auto px-4 py-8 pb-24">
             <!-- Query Title -->
             <h1 id="queryTitle" class="text-2xl md:text-3xl font-bold text-gray-900 text-center mb-2"></h1>
             <p class="text-center text-sm text-gray-400 mb-8">
@@ -209,23 +209,24 @@
                 <div id="suggestions" class="flex flex-wrap justify-center gap-2 mb-8"></div>
             </div>
 
-            <!-- Follow-up Input -->
-            <div id="followUpSection" class="hidden border-t border-gray-200 pt-6 mt-8">
-                <form id="followUpForm" class="relative max-w-2xl mx-auto">
-                    <input 
-                        type="text" 
-                        id="followUpInput"
-                        placeholder="Pergunte mais sobre os modelos..."
-                        class="w-full px-5 py-3 pr-14 border border-gray-200 rounded-full focus:outline-none focus:border-red-400 bg-white"
-                    >
-                    <button type="submit" class="absolute right-2 top-1/2 -translate-y-1/2 bg-red-500 hover:bg-red-600 text-white w-9 h-9 rounded-full flex items-center justify-center transition">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
-                        </svg>
-                    </button>
-                </form>
-            </div>
         </main>
+
+        <!-- Follow-up Input - Fixed at bottom -->
+        <div id="followUpSection" class="hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 z-40">
+            <form id="followUpForm" class="relative max-w-2xl mx-auto">
+                <input 
+                    type="text" 
+                    id="followUpInput"
+                    placeholder="Pergunte mais sobre os modelos..."
+                    class="w-full px-5 py-3 pr-14 border border-gray-200 rounded-full focus:outline-none focus:border-red-400 bg-white shadow-sm"
+                >
+                <button type="submit" class="absolute right-2 top-1/2 -translate-y-1/2 bg-red-500 hover:bg-red-600 text-white w-9 h-9 rounded-full flex items-center justify-center transition">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+                    </svg>
+                </button>
+            </form>
+        </div>
     </div>
 
     <script>
