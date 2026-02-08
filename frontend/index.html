@@ -12,29 +12,27 @@
         /* Pinterest-style floating images */
         .floating-img {
             position: absolute;
-            border-radius: 16px;
+            border-radius: 20px;
             overflow: hidden;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.08);
             transition: transform 0.3s ease;
         }
-        .floating-img:hover { transform: scale(1.03); }
+        .floating-img:hover { transform: scale(1.02); }
         .floating-img img { width: 100%; height: 100%; object-fit: cover; }
         
-        /* Positions for floating images - left side */
-        .img-l1 { left: -30px; top: 60px; width: 120px; height: 180px; }
-        .img-l2 { left: 40px; top: 260px; width: 140px; height: 180px; }
-        .img-l3 { left: 140px; top: 80px; width: 130px; height: 160px; }
-        .img-l4 { left: 10px; top: 460px; width: 110px; height: 140px; }
-        .img-l5 { left: 160px; top: 420px; width: 100px; height: 130px; }
+        /* Left side positions - top to bottom */
+        .img-l1 { left: 20px; top: 70px; width: 130px; height: 130px; }
+        .img-l2 { left: 100px; top: 160px; width: 120px; height: 150px; }
+        .img-l3 { left: 30px; top: 320px; width: 110px; height: 110px; }
+        .img-l4 { left: 20px; top: 480px; width: 150px; height: 150px; border-radius: 24px; }
         
-        /* Positions for floating images - right side */
-        .img-r1 { right: -30px; top: 60px; width: 120px; height: 180px; }
-        .img-r2 { right: 40px; top: 260px; width: 140px; height: 180px; }
-        .img-r3 { right: 140px; top: 80px; width: 130px; height: 160px; }
-        .img-r4 { right: 10px; top: 460px; width: 110px; height: 140px; }
-        .img-r5 { right: 160px; top: 420px; width: 100px; height: 130px; }
+        /* Right side positions - top to bottom */
+        .img-r1 { right: 100px; top: 70px; width: 110px; height: 110px; }
+        .img-r2 { right: 20px; top: 140px; width: 130px; height: 160px; }
+        .img-r3 { right: 30px; top: 340px; width: 140px; height: 170px; }
+        .img-r4 { right: 80px; top: 520px; width: 160px; height: 120px; }
         
-        @media (max-width: 1200px) {
+        @media (max-width: 1280px) {
             .floating-img { display: none; }
         }
         
@@ -75,34 +73,28 @@
         <div class="floating-img img-l1 cursor-pointer" onclick="search('fone bluetooth premium')">
             <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=300" alt="">
         </div>
-        <div class="floating-img img-l2 cursor-pointer" onclick="search('tênis esportivo')">
-            <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=300" alt="">
-        </div>
-        <div class="floating-img img-l3 cursor-pointer" onclick="search('mochila notebook')">
+        <div class="floating-img img-l2 cursor-pointer" onclick="search('mochila notebook')">
             <img src="https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=300" alt="">
         </div>
-        <div class="floating-img img-l4 cursor-pointer" onclick="search('mouse gamer')">
-            <img src="https://images.unsplash.com/photo-1527814050087-3793815479db?w=300" alt="">
+        <div class="floating-img img-l3 cursor-pointer" onclick="search('tênis esportivo')">
+            <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=300" alt="">
         </div>
-        <div class="floating-img img-l5 cursor-pointer" onclick="search('monitor ultrawide')">
-            <img src="https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=300" alt="">
+        <div class="floating-img img-l4 cursor-pointer" onclick="search('headphone studio')">
+            <img src="https://images.unsplash.com/photo-1583394838336-acd977736f90?w=300" alt="">
         </div>
 
         <!-- Floating Images - Right Side -->
-        <div class="floating-img img-r1 cursor-pointer" onclick="search('smartwatch')">
-            <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=300" alt="">
-        </div>
-        <div class="floating-img img-r2 cursor-pointer" onclick="search('perfume importado')">
-            <img src="https://images.unsplash.com/photo-1585386959984-a4155224a1ad?w=300" alt="">
-        </div>
-        <div class="floating-img img-r3 cursor-pointer" onclick="search('óculos de sol')">
+        <div class="floating-img img-r1 cursor-pointer" onclick="search('óculos de sol')">
             <img src="https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=300" alt="">
         </div>
-        <div class="floating-img img-r4 cursor-pointer" onclick="search('teclado mecânico')">
-            <img src="https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=300" alt="">
+        <div class="floating-img img-r2 cursor-pointer" onclick="search('smartwatch')">
+            <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=300" alt="">
         </div>
-        <div class="floating-img img-r5 cursor-pointer" onclick="search('cadeira gamer')">
-            <img src="https://images.unsplash.com/photo-1590736969955-71cc94901144?w=300" alt="">
+        <div class="floating-img img-r3 cursor-pointer" onclick="search('tablet iPad')">
+            <img src="https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=300" alt="">
+        </div>
+        <div class="floating-img img-r4 cursor-pointer" onclick="search('setup home office')">
+            <img src="https://images.unsplash.com/photo-1593062096033-9a26b09da705?w=300" alt="">
         </div>
 
         <!-- Hero Section -->
