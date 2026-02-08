@@ -143,27 +143,41 @@
         }
 
         function displayResults(data) {
-            let html = `<p class="text-gray-600 mb-4">Encontrei <strong>${data.recommendations.length} opções</strong>:</p><div class="space-y-4">`;
+            let html = `<p class="text-gray-600 mb-6">Encontrei <strong>${data.recommendations.length} opções</strong> para você:</p>`;
+            html += `<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">`;
             
-            data.recommendations.forEach((rec) => {
+            data.recommendations.forEach((rec, idx) => {
                 const link = rec.buy_links[0];
-                html += `<div class="product-card bg-white border border-gray-200 rounded-xl p-4">
-                    <div class="flex items-start gap-4">
-                        <div class="w-14 h-14 bg-gray-100 rounded-lg flex items-center justify-center text-2xl">${getEmoji(rec.name)}</div>
-                        <div class="flex-1">
-                            <div class="flex justify-between gap-2">
-                                <h3 class="font-semibold text-gray-900">${rec.name}</h3>
-                                <span class="text-red-500 font-bold">${rec.price_range}</span>
-                            </div>
-                            <p class="text-sm text-gray-500 mt-1">${rec.description}</p>
-                            <div class="flex flex-wrap gap-1 mt-2">${rec.pros.slice(0,3).map(p => `<span class="text-xs bg-green-50 text-green-700 px-2 py-1 rounded">✓ ${p}</span>`).join('')}</div>
-                            ${link ? `<a href="${link.url}" target="_blank" class="inline-block mt-3 text-sm text-red-500 font-medium">Comprar em ${link.store} →</a>` : ''}
+                const video = rec.review_videos[0];
+                const isTop = idx === 0;
+                const price = rec.price_range.match(/R\$\s*[\d.,]+/)?.[0] || rec.price_range;
+                const store = link?.store || 'Loja';
+                const bgColors = ['bg-blue-50', 'bg-pink-50', 'bg-purple-50', 'bg-green-50', 'bg-yellow-50'];
+                
+                html += `
+                <div class="product-card bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm">
+                    <div class="${bgColors[idx % bgColors.length]} p-6 relative flex items-center justify-center h-40">
+                        ${isTop ? '<span class="absolute top-3 left-3 bg-green-500 text-white text-xs font-medium px-2 py-1 rounded-full">⭐ TOP CHOICE</span>' : ''}
+                        <span class="text-6xl">${getEmoji(rec.name)}</span>
+                    </div>
+                    <div class="p-4">
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">${store}</span>
+                        </div>
+                        <h3 class="font-semibold text-gray-900 text-sm leading-tight mb-2">${rec.name}</h3>
+                        <div class="flex items-baseline gap-2 mb-3">
+                            <span class="text-lg font-bold text-gray-900">${price}</span>
+                        </div>
+                        <div class="flex gap-2">
+                            ${link ? `<a href="${link.url}" target="_blank" class="flex-1 bg-red-500 hover:bg-red-600 text-white text-center py-2 px-3 rounded-lg text-sm font-medium transition">Comprar</a>` : ''}
+                            ${video ? `<a href="${video.url}" target="_blank" class="flex items-center justify-center gap-1 border border-gray-200 hover:bg-gray-50 py-2 px-3 rounded-lg text-sm text-gray-600 transition">▶ Review</a>` : ''}
                         </div>
                     </div>
                 </div>`;
             });
             
-            html += `</div><p class="text-xs text-gray-400 mt-4">Busca em ${(data.search_time_ms/1000).toFixed(1)}s</p>`;
+            html += `</div>`;
+            html += `<p class="text-xs text-gray-400 mt-6 text-center">Busca realizada em ${(data.search_time_ms/1000).toFixed(1)}s</p>`;
             addAIMessage(html);
             window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
         }
