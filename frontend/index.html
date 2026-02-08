@@ -8,187 +8,243 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Inter', sans-serif; }
-        .chat-bubble { animation: fadeIn 0.3s ease-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .typing-indicator span { animation: bounce 1.4s infinite ease-in-out both; }
-        .typing-indicator span:nth-child(1) { animation-delay: -0.32s; }
-        .typing-indicator span:nth-child(2) { animation-delay: -0.16s; }
-        @keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1); } }
-        .product-card { transition: all 0.2s; }
-        .product-card:hover { transform: scale(1.02); }
-        .markdown-content a { color: #dc2626; text-decoration: underline; }
-        .markdown-content strong { font-weight: 600; }
+        .gradient-bg { background: linear-gradient(135deg, #fef2f2 0%, #fff 50%, #fef2f2 100%); }
+        .product-card { transition: all 0.2s ease; }
+        .product-card:hover { transform: translateY(-4px); box-shadow: 0 12px 24px rgba(0,0,0,0.1); }
+        .search-input:focus { box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1); }
+        .fade-in { animation: fadeIn 0.4s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .shimmer { background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; }
+        @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
     </style>
 </head>
-<body class="bg-gray-50 min-h-screen flex flex-col">
+<body class="bg-white min-h-screen">
     <!-- Header -->
-    <header class="bg-white border-b border-gray-200 sticky top-0 z-50">
-        <div class="max-w-3xl mx-auto px-4 py-3 flex items-center gap-3">
-            <span class="text-2xl">🛒</span>
-            <div>
-                <h1 class="font-bold text-lg text-gray-900">Personal Shopper</h1>
-                <p class="text-xs text-gray-500">Seu assistente de compras com IA</p>
-            </div>
+    <header class="border-b border-gray-100 bg-white/80 backdrop-blur-sm sticky top-0 z-50">
+        <div class="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
+            <a href="/" class="flex items-center gap-2" onclick="goHome(event)">
+                <span class="text-2xl">🛒</span>
+                <span class="font-bold text-xl text-gray-900">PersonalShopper</span>
+            </a>
         </div>
     </header>
 
-    <!-- Chat Container -->
-    <main class="flex-1 overflow-y-auto pb-32">
-        <div id="chat" class="max-w-3xl mx-auto px-4 py-6 space-y-4">
-            <!-- Welcome message -->
-            <div class="chat-bubble flex gap-3">
-                <div class="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center flex-shrink-0">
-                    🛒
-                </div>
-                <div class="bg-white rounded-2xl rounded-tl-md px-4 py-3 shadow-sm border border-gray-100 max-w-[85%]">
-                    <p class="text-gray-700">Olá! 👋 Sou seu personal shopper. Me conta o que você está procurando e eu encontro as melhores opções pra você!</p>
-                    <div class="mt-3 flex flex-wrap gap-2">
-                        <button onclick="sendSuggestion('Quero um fone bluetooth bom e barato')" class="text-sm px-3 py-1.5 bg-gray-100 hover:bg-gray-200 rounded-full text-gray-700 transition">🎧 Fone bluetooth</button>
-                        <button onclick="sendSuggestion('Preciso de um monitor para programar')" class="text-sm px-3 py-1.5 bg-gray-100 hover:bg-gray-200 rounded-full text-gray-700 transition">🖥️ Monitor</button>
-                        <button onclick="sendSuggestion('Qual melhor notebook até 4000?')" class="text-sm px-3 py-1.5 bg-gray-100 hover:bg-gray-200 rounded-full text-gray-700 transition">💻 Notebook</button>
+    <!-- Main Content -->
+    <main>
+        <!-- Hero / Search Section -->
+        <section id="heroSection" class="gradient-bg py-16 md:py-24">
+            <div class="max-w-3xl mx-auto px-4 text-center">
+                <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+                    Encontre o produto<br>
+                    <span class="text-red-500">perfeito pra você</span>
+                </h1>
+                <p class="text-gray-500 mb-8 max-w-md mx-auto">
+                    Descreva o que você precisa e a IA encontra as melhores opções com preços e reviews
+                </p>
+                
+                <form id="searchForm" class="max-w-2xl mx-auto mb-8">
+                    <div class="flex items-center bg-white rounded-2xl border border-gray-200 p-2 shadow-lg search-input focus-within:border-red-300">
+                        <span class="pl-4 text-gray-400 text-xl">🔍</span>
+                        <input 
+                            type="text" 
+                            id="searchInput" 
+                            placeholder="fone bluetooth bom até 500 reais..." 
+                            class="flex-1 bg-transparent px-4 py-3 outline-none text-gray-700 text-lg"
+                            autocomplete="off"
+                        >
+                        <button type="submit" class="bg-red-500 hover:bg-red-600 text-white px-8 py-3 rounded-xl font-semibold transition">
+                            Buscar
+                        </button>
                     </div>
+                </form>
+
+                <div class="flex flex-wrap justify-center gap-2">
+                    <button onclick="search('Fone bluetooth até 300 reais')" class="px-4 py-2 bg-white/80 hover:bg-white rounded-full text-sm text-gray-600 border border-gray-200 transition">🎧 Fone bluetooth</button>
+                    <button onclick="search('Monitor 27 polegadas para programar')" class="px-4 py-2 bg-white/80 hover:bg-white rounded-full text-sm text-gray-600 border border-gray-200 transition">🖥️ Monitor 27"</button>
+                    <button onclick="search('Notebook bom e barato para estudar')" class="px-4 py-2 bg-white/80 hover:bg-white rounded-full text-sm text-gray-600 border border-gray-200 transition">💻 Notebook</button>
+                    <button onclick="search('Cadeira ergonômica home office')" class="px-4 py-2 bg-white/80 hover:bg-white rounded-full text-sm text-gray-600 border border-gray-200 transition">🪑 Cadeira</button>
                 </div>
             </div>
-        </div>
-    </main>
+        </section>
 
-    <!-- Input Area -->
-    <div class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200">
-        <div class="max-w-3xl mx-auto px-4 py-4">
-            <form id="chatForm" class="flex gap-3">
-                <input 
-                    type="text" 
-                    id="messageInput" 
-                    placeholder="O que você está procurando?" 
-                    class="flex-1 px-4 py-3 bg-gray-100 rounded-xl border-0 focus:ring-2 focus:ring-red-500 focus:bg-white transition"
-                    autocomplete="off"
-                >
-                <button 
-                    type="submit" 
-                    id="sendBtn"
-                    class="px-6 py-3 bg-red-500 hover:bg-red-600 text-white font-medium rounded-xl transition disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                    Enviar
-                </button>
-            </form>
-        </div>
-    </div>
-
-    <script>
-        const chatContainer = document.getElementById('chat');
-        const chatForm = document.getElementById('chatForm');
-        const messageInput = document.getElementById('messageInput');
-        const sendBtn = document.getElementById('sendBtn');
-        
-        let conversationHistory = [];
-        let isLoading = false;
-
-        function sendSuggestion(text) {
-            messageInput.value = text;
-            chatForm.dispatchEvent(new Event('submit'));
-        }
-
-        function addMessage(role, content) {
-            const isUser = role === 'user';
-            const bubble = document.createElement('div');
-            bubble.className = `chat-bubble flex gap-3 ${isUser ? 'flex-row-reverse' : ''}`;
-            
-            const avatar = isUser 
-                ? '<div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center flex-shrink-0">👤</div>'
-                : '<div class="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center flex-shrink-0">🛒</div>';
-            
-            const bgClass = isUser ? 'bg-red-500 text-white' : 'bg-white border border-gray-100 shadow-sm';
-            const roundedClass = isUser ? 'rounded-tr-md' : 'rounded-tl-md';
-            
-            // Convert markdown-like content to HTML
-            let htmlContent = content
-                .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-                .replace(/\[(.+?)\]\((.+?)\)/g, '<a href="$2" target="_blank">$1</a>')
-                .replace(/\n/g, '<br>');
-            
-            bubble.innerHTML = `
-                ${avatar}
-                <div class="${bgClass} rounded-2xl ${roundedClass} px-4 py-3 max-w-[85%] markdown-content">
-                    ${htmlContent}
-                </div>
-            `;
-            
-            chatContainer.appendChild(bubble);
-            chatContainer.scrollTop = chatContainer.scrollHeight;
-        }
-
-        function addTypingIndicator() {
-            const bubble = document.createElement('div');
-            bubble.id = 'typing';
-            bubble.className = 'chat-bubble flex gap-3';
-            bubble.innerHTML = `
-                <div class="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center flex-shrink-0">🛒</div>
-                <div class="bg-white rounded-2xl rounded-tl-md px-4 py-3 shadow-sm border border-gray-100">
-                    <div class="typing-indicator flex gap-1">
-                        <span class="w-2 h-2 bg-gray-400 rounded-full"></span>
-                        <span class="w-2 h-2 bg-gray-400 rounded-full"></span>
-                        <span class="w-2 h-2 bg-gray-400 rounded-full"></span>
+        <!-- Loading State -->
+        <section id="loadingSection" class="hidden py-12">
+            <div class="max-w-5xl mx-auto px-4">
+                <div class="text-center mb-8">
+                    <div class="inline-flex items-center gap-3 bg-red-50 text-red-600 px-4 py-2 rounded-full">
+                        <svg class="animate-spin h-5 w-5" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg>
+                        <span class="font-medium">Buscando as melhores opções...</span>
                     </div>
                 </div>
-            `;
-            chatContainer.appendChild(bubble);
-            chatContainer.scrollTop = chatContainer.scrollHeight;
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div class="bg-white rounded-2xl p-4 border border-gray-100"><div class="shimmer h-40 rounded-xl mb-4"></div><div class="shimmer h-4 w-3/4 rounded mb-2"></div><div class="shimmer h-4 w-1/2 rounded"></div></div>
+                    <div class="bg-white rounded-2xl p-4 border border-gray-100"><div class="shimmer h-40 rounded-xl mb-4"></div><div class="shimmer h-4 w-3/4 rounded mb-2"></div><div class="shimmer h-4 w-1/2 rounded"></div></div>
+                    <div class="bg-white rounded-2xl p-4 border border-gray-100"><div class="shimmer h-40 rounded-xl mb-4"></div><div class="shimmer h-4 w-3/4 rounded mb-2"></div><div class="shimmer h-4 w-1/2 rounded"></div></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Results Section -->
+        <section id="resultsSection" class="hidden py-8">
+            <div class="max-w-5xl mx-auto px-4">
+                <!-- Query display -->
+                <div class="mb-6">
+                    <p class="text-gray-500 text-sm">Resultados para</p>
+                    <h2 id="queryDisplay" class="text-2xl font-bold text-gray-900"></h2>
+                </div>
+
+                <!-- Products Grid -->
+                <div id="productsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8"></div>
+
+                <!-- Search Time -->
+                <p id="searchTime" class="text-center text-sm text-gray-400 mb-8"></p>
+
+                <!-- Follow-up Search -->
+                <div class="max-w-2xl mx-auto">
+                    <form id="followUpForm" class="flex items-center bg-gray-50 rounded-2xl border border-gray-200 p-2">
+                        <input 
+                            type="text" 
+                            id="followUpInput" 
+                            placeholder="Refinar busca ou perguntar mais..." 
+                            class="flex-1 bg-transparent px-4 py-2 outline-none text-gray-700"
+                        >
+                        <button type="submit" class="bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded-xl font-medium transition">
+                            Buscar
+                        </button>
+                    </form>
+                    <button onclick="goHome()" class="mt-4 text-sm text-gray-500 hover:text-gray-700 mx-auto block">← Nova busca</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Error Section -->
+        <section id="errorSection" class="hidden py-12">
+            <div class="max-w-md mx-auto px-4 text-center">
+                <div class="text-6xl mb-4">😕</div>
+                <h2 class="text-xl font-bold text-gray-900 mb-2">Ops, algo deu errado</h2>
+                <p id="errorMessage" class="text-gray-500 mb-6"></p>
+                <button onclick="goHome()" class="bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-xl font-medium transition">Tentar novamente</button>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const searchForm = document.getElementById('searchForm');
+        const followUpForm = document.getElementById('followUpForm');
+        const searchInput = document.getElementById('searchInput');
+        const followUpInput = document.getElementById('followUpInput');
+
+        function showSection(sectionId) {
+            ['heroSection', 'loadingSection', 'resultsSection', 'errorSection'].forEach(id => {
+                document.getElementById(id).classList.add('hidden');
+            });
+            document.getElementById(sectionId).classList.remove('hidden');
         }
 
-        function removeTypingIndicator() {
-            const typing = document.getElementById('typing');
-            if (typing) typing.remove();
+        function goHome(e) {
+            if (e) e.preventDefault();
+            showSection('heroSection');
+            searchInput.value = '';
+            searchInput.focus();
         }
 
-        chatForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
+        function search(query) {
+            searchInput.value = query;
+            searchForm.dispatchEvent(new Event('submit'));
+        }
+
+        function getEmoji(name) {
+            const n = name.toLowerCase();
+            if (n.includes('fone') || n.includes('headphone') || n.includes('buds') || n.includes('airpod')) return '🎧';
+            if (n.includes('monitor')) return '🖥️';
+            if (n.includes('notebook') || n.includes('laptop')) return '💻';
+            if (n.includes('teclado') || n.includes('keyboard')) return '⌨️';
+            if (n.includes('mouse')) return '🖱️';
+            if (n.includes('cadeira') || n.includes('chair')) return '🪑';
+            if (n.includes('watch') || n.includes('relógio')) return '⌚';
+            if (n.includes('celular') || n.includes('phone') || n.includes('galaxy') || n.includes('iphone')) return '📱';
+            if (n.includes('tv') || n.includes('televisão')) return '📺';
+            return '📦';
+        }
+
+        function renderProducts(data) {
+            const grid = document.getElementById('productsGrid');
+            const colors = ['bg-blue-50', 'bg-pink-50', 'bg-purple-50', 'bg-green-50', 'bg-amber-50'];
             
-            const message = messageInput.value.trim();
-            if (!message || isLoading) return;
+            grid.innerHTML = data.recommendations.map((product, i) => {
+                const link = product.buy_links[0];
+                const review = product.review_videos?.[0];
+                const hasImage = product.image_url && !product.image_url.includes('logo');
+                const price = product.price_range?.match(/R\$\s*[\d.,]+/)?.[0] || product.price_range || 'Ver preço';
+                
+                return `
+                <div class="product-card bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm fade-in" style="animation-delay: ${i * 0.1}s">
+                    <div class="${colors[i % colors.length]} p-4 relative flex items-center justify-center h-44">
+                        ${i === 0 ? '<span class="absolute top-3 left-3 bg-green-500 text-white text-xs font-semibold px-2 py-1 rounded-full">⭐ Recomendado</span>' : ''}
+                        ${hasImage 
+                            ? `<img src="${product.image_url}" alt="${product.name}" class="max-h-36 max-w-full object-contain" onerror="this.outerHTML='<span class=\\'text-6xl\\'>${getEmoji(product.name)}</span>'">`
+                            : `<span class="text-6xl">${getEmoji(product.name)}</span>`
+                        }
+                    </div>
+                    <div class="p-4">
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">${link?.store || 'Loja'}</span>
+                        </div>
+                        <h3 class="font-semibold text-gray-900 leading-tight mb-2 line-clamp-2">${product.name}</h3>
+                        <p class="text-xl font-bold text-gray-900 mb-3">${price}</p>
+                        <div class="flex gap-2">
+                            ${link ? `<a href="${link.url}" target="_blank" class="flex-1 bg-red-500 hover:bg-red-600 text-white text-center py-2.5 rounded-lg font-medium transition">Comprar</a>` : ''}
+                            ${review ? `<a href="${review.url}" target="_blank" class="flex items-center justify-center gap-1 bg-gray-100 hover:bg-gray-200 py-2.5 px-4 rounded-lg text-gray-700 transition" title="Ver review"><svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/></svg></a>` : ''}
+                        </div>
+                    </div>
+                </div>
+                `;
+            }).join('');
+
+            document.getElementById('queryDisplay').textContent = `"${data.query}"`;
+            document.getElementById('searchTime').textContent = `Busca realizada em ${(data.search_time_ms / 1000).toFixed(1)}s`;
+        }
+
+        async function doSearch(query) {
+            if (!query.trim()) return;
             
-            isLoading = true;
-            sendBtn.disabled = true;
-            messageInput.value = '';
-            
-            // Add user message
-            addMessage('user', message);
-            conversationHistory.push({ role: 'user', content: message });
-            
-            // Show typing indicator
-            addTypingIndicator();
+            showSection('loadingSection');
             
             try {
-                const response = await fetch('/api/chat', {
+                const response = await fetch('/api/search', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        messages: conversationHistory,
-                        language: 'pt-BR'
-                    })
+                    body: JSON.stringify({ query, language: 'pt-BR', country: 'BR' })
                 });
                 
                 const data = await response.json();
                 
-                removeTypingIndicator();
-                
-                if (data.response) {
-                    addMessage('assistant', data.response);
-                    conversationHistory.push({ role: 'assistant', content: data.response });
-                } else if (data.detail) {
-                    addMessage('assistant', `Desculpe, tive um problema: ${data.detail}`);
+                if (!response.ok) {
+                    throw new Error(data.detail || 'Erro na busca');
                 }
+                
+                renderProducts(data);
+                showSection('resultsSection');
+                followUpInput.focus();
+                
             } catch (error) {
-                removeTypingIndicator();
-                addMessage('assistant', 'Desculpe, ocorreu um erro. Tente novamente.');
-            } finally {
-                isLoading = false;
-                sendBtn.disabled = false;
-                messageInput.focus();
+                document.getElementById('errorMessage').textContent = error.message;
+                showSection('errorSection');
             }
+        }
+
+        searchForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            doSearch(searchInput.value);
         });
 
-        // Focus input on load
-        messageInput.focus();
+        followUpForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            doSearch(followUpInput.value);
+            followUpInput.value = '';
+        });
+
+        searchInput.focus();
     </script>
 </body>
 </html>
