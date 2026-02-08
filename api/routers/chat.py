@@ -1,11 +1,13 @@
 """Chat endpoint - conversational shopping assistant"""
 from fastapi import APIRouter, HTTPException
+from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
-from typing import List, Optional
+from typing import List, Optional, AsyncGenerator
 import anthropic
 import json
 import os
 import re
+import asyncio
 
 from .search import find_product_links, find_youtube_reviews, find_product_image, brave_search
 
@@ -208,3 +210,117 @@ async def chat(request: ChatRequest):
     
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/chat/stream")
+async def chat_stream(request: ChatRequest):
+    """Streaming conversational shopping endpoint using SSE"""
+    if not ANTHROPIC_API_KEY:
+        raise HTTPException(status_code=500, detail="API not configured")
+    
+    async def generate() -> AsyncGenerator[str, None]:
+        client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
+        messages = [{"role": m.role, "content": m.content} for m in request.messages]
+        products = None
+        
+        try:
+            # First call with streaming
+            with client.messages.stream(
+                model="claude-sonnet-4-20250514",
+                max_tokens=1024,
+                system=SYSTEM_PROMPT,
+                tools=[SEARCH_TOOL],
+                messages=messages
+            ) as stream:
+                full_response = None
+                collected_text = ""
+                
+                for event in stream:
+                    if hasattr(event, 'type'):
+                        if event.type == 'content_block_delta':
+                            if hasattr(event.delta, 'text'):
+                                collected_text += event.delta.text
+                                yield f"data: {json.dumps({'type': 'text', 'content': event.delta.text})}\n\n"
+                        elif event.type == 'message_stop':
+                            full_response = stream.get_final_message()
+            
+            if not full_response:
+                yield f"data: {json.dumps({'type': 'error', 'content': 'No response'})}\n\n"
+                return
+            
+            # Check if tool was called
+            if full_response.stop_reason == "tool_use":
+                tool_use = next((b for b in full_response.content if b.type == "tool_use"), None)
+                
+                if tool_use and tool_use.name == "search_products":
+                    # Notify frontend that we're searching
+                    yield f"data: {json.dumps({'type': 'searching', 'query': tool_use.input.get('query', '')})}\n\n"
+                    
+                    # Execute search
+                    result = await execute_search(tool_use.input.get("query", ""))
+                    products = result.get("products", [])
+                    
+                    # Format for Claude
+                    if products:
+                        products_text = "\n".join([
+                            f"- {p['name']}: {p['price']} ({p['buy_links'][0]['store']})"
+                            for p in products
+                        ])
+                        tool_result = f"Encontrei {len(products)} produtos:\n{products_text}"
+                    else:
+                        tool_result = "Não encontrei produtos para essa busca."
+                    
+                    # Serialize content blocks
+                    assistant_content = []
+                    for block in full_response.content:
+                        if block.type == "text":
+                            assistant_content.append({"type": "text", "text": block.text})
+                        elif block.type == "tool_use":
+                            assistant_content.append({
+                                "type": "tool_use",
+                                "id": block.id,
+                                "name": block.name,
+                                "input": block.input
+                            })
+                    
+                    messages.append({"role": "assistant", "content": assistant_content})
+                    messages.append({
+                        "role": "user",
+                        "content": [{
+                            "type": "tool_result",
+                            "tool_use_id": tool_use.id,
+                            "content": tool_result
+                        }]
+                    })
+                    
+                    # Stream the final response
+                    with client.messages.stream(
+                        model="claude-sonnet-4-20250514",
+                        max_tokens=1024,
+                        system=SYSTEM_PROMPT,
+                        tools=[SEARCH_TOOL],
+                        messages=messages
+                    ) as stream2:
+                        for event in stream2:
+                            if hasattr(event, 'type') and event.type == 'content_block_delta':
+                                if hasattr(event.delta, 'text'):
+                                    yield f"data: {json.dumps({'type': 'text', 'content': event.delta.text})}\n\n"
+            
+            # Send products at the end
+            if products:
+                yield f"data: {json.dumps({'type': 'products', 'content': products})}\n\n"
+            
+            yield f"data: {json.dumps({'type': 'done'})}\n\n"
+            
+        except Exception as e:
+            yield f"data: {json.dumps({'type': 'error', 'content': str(e)})}\n\n"
+    
+    return StreamingResponse(
+        generate(),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+            "X-Accel-Buffering": "no"
+        }
+    )
