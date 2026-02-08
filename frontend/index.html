@@ -7,92 +7,151 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; }
-        .masonry { columns: 4; column-gap: 16px; }
-        .masonry-item { break-inside: avoid; margin-bottom: 16px; }
-        @media (max-width: 1024px) { .masonry { columns: 3; } }
-        @media (max-width: 768px) { .masonry { columns: 2; } }
+        body { font-family: 'Inter', sans-serif; overflow-x: hidden; }
+        
+        /* Pinterest-style floating images */
+        .floating-img {
+            position: absolute;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+        .floating-img:hover { transform: scale(1.03); }
+        .floating-img img { width: 100%; height: 100%; object-fit: cover; }
+        
+        /* Positions for floating images - left side */
+        .img-l1 { left: -40px; top: 80px; width: 140px; height: 200px; }
+        .img-l2 { left: 20px; top: 300px; width: 120px; height: 160px; }
+        .img-l3 { left: 120px; top: 120px; width: 160px; height: 220px; }
+        .img-l4 { left: 80px; top: 380px; width: 100px; height: 140px; }
+        
+        /* Positions for floating images - right side */
+        .img-r1 { right: -40px; top: 80px; width: 140px; height: 200px; }
+        .img-r2 { right: 20px; top: 300px; width: 120px; height: 160px; }
+        .img-r3 { right: 120px; top: 120px; width: 160px; height: 220px; }
+        .img-r4 { right: 80px; top: 380px; width: 100px; height: 140px; }
+        
+        @media (max-width: 1200px) {
+            .floating-img { display: none; }
+        }
+        
         .fade-in { animation: fadeIn 0.4s ease-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
         .search-input:focus { box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2); }
         .product-card { transition: transform 0.2s, box-shadow 0.2s; }
         .product-card:hover { transform: translateY(-4px); box-shadow: 0 12px 24px rgba(0,0,0,0.1); }
-        .inspiration-item { transition: transform 0.2s; cursor: pointer; }
-        .inspiration-item:hover { transform: scale(1.02); }
+        
+        /* Carousel dots */
+        .dot { transition: all 0.3s; }
+        .dot.active { background-color: #10b981; width: 24px; border-radius: 12px; }
     </style>
 </head>
-<body class="bg-gray-50 min-h-screen">
+<body class="bg-white min-h-screen">
 
     <!-- HOME PAGE -->
-    <div id="homePage">
+    <div id="homePage" class="min-h-screen relative">
         <!-- Header -->
-        <header class="bg-white border-b border-gray-100">
-            <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+        <header class="relative z-50">
+            <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
                 <div class="flex items-center gap-8">
                     <a href="/" class="flex items-center gap-2">
                         <span class="text-2xl">🛒</span>
                         <span class="font-bold text-xl text-gray-900">PersonalShopper</span>
                     </a>
                     <nav class="hidden md:flex items-center gap-6 text-sm text-gray-600">
-                        <a href="#" class="hover:text-gray-900">Como funciona</a>
-                        <a href="#" class="hover:text-gray-900">Sobre</a>
+                        <a href="#" class="hover:text-gray-900">Explorar</a>
                     </nav>
                 </div>
-                <div class="flex items-center gap-3">
-                    <button class="text-sm text-gray-600 hover:text-gray-900 px-3 py-2">Entrar</button>
-                    <button class="text-sm bg-gray-900 text-white px-4 py-2 rounded-lg hover:bg-gray-800">Criar conta</button>
+                <div class="flex items-center gap-4">
+                    <nav class="hidden md:flex items-center gap-6 text-sm text-gray-600">
+                        <a href="#" class="hover:text-gray-900">Sobre</a>
+                        <a href="#" class="hover:text-gray-900">Empresas</a>
+                    </nav>
+                    <button class="text-sm bg-red-500 text-white px-4 py-2 rounded-full hover:bg-red-600 font-medium">Entrar</button>
+                    <button class="text-sm text-gray-700 hover:text-gray-900 px-3 py-2">Criar conta</button>
                 </div>
             </div>
         </header>
 
-        <!-- Hero -->
-        <section class="pt-16 pb-8 px-4">
-            <div class="max-w-2xl mx-auto text-center">
-                <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-2">Descubra sua próxima</h1>
-                <h1 class="text-4xl md:text-5xl font-bold text-red-500 mb-8">melhor compra com IA</h1>
+        <!-- Floating Images - Left Side -->
+        <div class="floating-img img-l1 cursor-pointer" onclick="search('fone bluetooth premium')">
+            <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=300" alt="">
+        </div>
+        <div class="floating-img img-l2 cursor-pointer" onclick="search('decoração casa')">
+            <img src="https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=300" alt="">
+        </div>
+        <div class="floating-img img-l3 cursor-pointer" onclick="search('mochila notebook')">
+            <img src="https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=300" alt="">
+        </div>
+        <div class="floating-img img-l4 cursor-pointer" onclick="search('tênis esportivo')">
+            <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=300" alt="">
+        </div>
+
+        <!-- Floating Images - Right Side -->
+        <div class="floating-img img-r1 cursor-pointer" onclick="search('smartwatch')">
+            <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=300" alt="">
+        </div>
+        <div class="floating-img img-r2 cursor-pointer" onclick="search('óculos de sol')">
+            <img src="https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=300" alt="">
+        </div>
+        <div class="floating-img img-r3 cursor-pointer" onclick="search('cadeira gamer')">
+            <img src="https://images.unsplash.com/photo-1590736969955-71cc94901144?w=300" alt="">
+        </div>
+        <div class="floating-img img-r4 cursor-pointer" onclick="search('perfume importado')">
+            <img src="https://images.unsplash.com/photo-1585386959984-a4155224a1ad?w=300" alt="">
+        </div>
+
+        <!-- Hero Section -->
+        <section class="relative z-10 pt-20 pb-12 px-4">
+            <div class="max-w-3xl mx-auto text-center">
+                <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-2">Encontre sua próxima</h1>
+                <h1 id="heroSubtitle" class="text-4xl md:text-5xl lg:text-6xl font-bold text-emerald-500 mb-8">melhor compra com IA</h1>
+                
+                <!-- Carousel Dots -->
+                <div class="flex justify-center gap-2 mb-10">
+                    <span class="dot w-2 h-2 bg-emerald-500 rounded-full active"></span>
+                    <span class="dot w-2 h-2 bg-gray-300 rounded-full"></span>
+                    <span class="dot w-2 h-2 bg-gray-300 rounded-full"></span>
+                    <span class="dot w-2 h-2 bg-gray-300 rounded-full"></span>
+                </div>
                 
                 <!-- Search Bar -->
-                <form id="searchForm" class="relative max-w-xl mx-auto">
+                <form id="searchForm" class="relative max-w-xl mx-auto mb-8">
                     <input 
                         type="text" 
                         id="searchInput"
-                        placeholder="fone bluetooth até 500 reais"
-                        class="search-input w-full px-5 py-4 pr-14 text-lg border border-gray-200 rounded-full focus:outline-none focus:border-red-400 bg-white"
+                        placeholder="O que você está procurando?"
+                        class="search-input w-full px-6 py-4 pr-14 text-lg border-2 border-gray-200 rounded-full focus:outline-none focus:border-red-400 bg-white shadow-sm"
                     >
-                    <button type="submit" class="absolute right-2 top-1/2 -translate-y-1/2 bg-red-500 hover:bg-red-600 text-white w-10 h-10 rounded-full flex items-center justify-center transition">
+                    <button type="submit" class="absolute right-2 top-1/2 -translate-y-1/2 bg-red-500 hover:bg-red-600 text-white w-11 h-11 rounded-full flex items-center justify-center transition shadow-md">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                         </svg>
                     </button>
                 </form>
-            </div>
-        </section>
 
-        <!-- Popular Searches -->
-        <section class="pb-8 px-4">
-            <div class="max-w-4xl mx-auto">
-                <p class="text-center text-xs text-gray-400 uppercase tracking-wider mb-4">Buscas Populares</p>
+                <!-- Popular Searches -->
                 <div class="flex flex-wrap justify-center gap-2">
-                    <button onclick="search('Notebook gamer barato')" class="px-4 py-2 bg-white border border-gray-200 rounded-full text-sm text-gray-700 hover:border-gray-300 hover:bg-gray-50 transition">Notebook gamer barato</button>
-                    <button onclick="search('Tênis corrida performance')" class="px-4 py-2 bg-white border border-gray-200 rounded-full text-sm text-gray-700 hover:border-gray-300 hover:bg-gray-50 transition">Tênis corrida performance</button>
-                    <button onclick="search('Smartwatch com GPS')" class="px-4 py-2 bg-white border border-gray-200 rounded-full text-sm text-gray-700 hover:border-gray-300 hover:bg-gray-50 transition">Smartwatch com GPS</button>
-                    <button onclick="search('Cadeira ergonômica')" class="px-4 py-2 bg-white border border-gray-200 rounded-full text-sm text-gray-700 hover:border-gray-300 hover:bg-gray-50 transition">Cadeira ergonômica</button>
+                    <button onclick="search('Notebook gamer barato')" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-full text-sm text-gray-700 transition">Notebook gamer barato</button>
+                    <button onclick="search('Fone bluetooth até 500')" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-full text-sm text-gray-700 transition">Fone bluetooth até 500</button>
+                    <button onclick="search('Smartwatch com GPS')" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-full text-sm text-gray-700 transition">Smartwatch com GPS</button>
+                    <button onclick="search('Cadeira ergonômica')" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-full text-sm text-gray-700 transition">Cadeira ergonômica</button>
                 </div>
             </div>
         </section>
 
-        <!-- Inspiration Grid -->
-        <section class="px-4 pb-16">
-            <div class="max-w-6xl mx-auto">
-                <div class="masonry" id="inspirationGrid">
-                    <!-- Items will be populated by JS -->
-                </div>
-            </div>
-        </section>
+        <!-- Scroll indicator -->
+        <div class="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
+            <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/>
+            </svg>
+        </div>
     </div>
 
     <!-- RESULTS PAGE -->
-    <div id="resultsPage" class="hidden">
+    <div id="resultsPage" class="hidden min-h-screen bg-gray-50">
         <!-- Header -->
         <header class="bg-white border-b border-gray-100 sticky top-0 z-50">
             <div class="max-w-4xl mx-auto px-4 py-3 flex items-center gap-4">
@@ -101,12 +160,12 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
                     </svg>
                 </button>
-                <a href="/" class="flex items-center gap-2">
+                <a href="/" onclick="goHome(); return false;" class="flex items-center gap-2">
                     <span class="text-xl">🛒</span>
                     <span class="font-bold text-lg text-gray-900">PersonalShopper</span>
                 </a>
                 <div class="flex-1"></div>
-                <button class="text-gray-400 hover:text-gray-600">
+                <button class="text-gray-400 hover:text-gray-600" title="Histórico">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                     </svg>
@@ -129,29 +188,29 @@
 
             <!-- Loading State -->
             <div id="loadingState" class="text-center py-12">
-                <div class="inline-flex items-center gap-2 text-gray-500">
-                    <svg class="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24">
+                <div class="inline-flex items-center gap-3 text-gray-500">
+                    <svg class="animate-spin w-6 h-6" fill="none" viewBox="0 0 24 24">
                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                     </svg>
-                    Buscando os melhores produtos...
+                    <span>Buscando os melhores produtos...</span>
                 </div>
             </div>
 
             <!-- Results Content -->
             <div id="resultsContent" class="hidden fade-in">
                 <!-- Summary -->
-                <div id="summaryText" class="text-gray-700 leading-relaxed mb-8"></div>
+                <div id="summaryText" class="text-gray-700 leading-relaxed mb-8 text-center max-w-2xl mx-auto"></div>
 
                 <!-- Product Cards -->
                 <div id="productCards" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8"></div>
 
                 <!-- Follow-up Suggestions -->
-                <div id="suggestions" class="flex flex-wrap gap-2 mb-8"></div>
+                <div id="suggestions" class="flex flex-wrap justify-center gap-2 mb-8"></div>
             </div>
 
             <!-- Follow-up Input -->
-            <div id="followUpSection" class="hidden border-t border-gray-200 pt-6">
+            <div id="followUpSection" class="hidden border-t border-gray-200 pt-6 mt-8">
                 <form id="followUpForm" class="relative max-w-2xl mx-auto">
                     <input 
                         type="text" 
@@ -170,31 +229,28 @@
     </div>
 
     <script>
-        // Inspiration items for home grid
-        const inspirationItems = [
-            { img: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400', query: 'fone bluetooth premium', h: 'h-64' },
-            { img: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400', query: 'mochila notebook', h: 'h-48' },
-            { img: 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=400', query: 'sofá moderno', h: 'h-56' },
-            { img: 'https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=400', query: 'óculos de sol', h: 'h-40' },
-            { img: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400', query: 'tênis esportivo', h: 'h-52' },
-            { img: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400', query: 'smartwatch', h: 'h-44' },
-            { img: 'https://images.unsplash.com/photo-1585386959984-a4155224a1ad?w=400', query: 'perfume importado', h: 'h-60' },
-            { img: 'https://images.unsplash.com/photo-1598327105666-5b89351aff97?w=400', query: 'smartphone custo benefício', h: 'h-48' },
-            { img: 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400', query: 'macbook', h: 'h-44' },
-            { img: 'https://images.unsplash.com/photo-1590736969955-71cc94901144?w=400', query: 'cadeira gamer', h: 'h-56' },
-            { img: 'https://images.unsplash.com/photo-1511499767150-a48a237f0083?w=400', query: 'óculos aviador', h: 'h-40' },
-            { img: 'https://images.unsplash.com/photo-1600185365926-3a2ce3cdb9eb?w=400', query: 'tênis casual', h: 'h-52' },
+        // Hero subtitle rotation
+        const subtitles = [
+            { text: 'melhor compra com IA', color: 'text-emerald-500' },
+            { text: 'presente perfeito', color: 'text-pink-500' },
+            { text: 'upgrade de setup', color: 'text-blue-500' },
+            { text: 'estilo único', color: 'text-purple-500' }
         ];
+        let currentSubtitle = 0;
+        const heroSubtitle = document.getElementById('heroSubtitle');
+        const dots = document.querySelectorAll('.dot');
 
-        // Populate inspiration grid
-        const grid = document.getElementById('inspirationGrid');
-        inspirationItems.forEach(item => {
-            const div = document.createElement('div');
-            div.className = `masonry-item inspiration-item rounded-2xl overflow-hidden bg-gray-100 ${item.h}`;
-            div.onclick = () => search(item.query);
-            div.innerHTML = `<img src="${item.img}" alt="${item.query}" class="w-full h-full object-cover">`;
-            grid.appendChild(div);
-        });
+        setInterval(() => {
+            currentSubtitle = (currentSubtitle + 1) % subtitles.length;
+            const sub = subtitles[currentSubtitle];
+            heroSubtitle.style.opacity = 0;
+            setTimeout(() => {
+                heroSubtitle.textContent = sub.text;
+                heroSubtitle.className = `text-4xl md:text-5xl lg:text-6xl font-bold ${sub.color} mb-8`;
+                heroSubtitle.style.opacity = 1;
+                dots.forEach((d, i) => d.classList.toggle('active', i === currentSubtitle));
+            }, 300);
+        }, 3000);
 
         // State
         let conversationHistory = [];
@@ -218,7 +274,6 @@
             currentQuery = query;
             conversationHistory = [{ role: 'user', content: query }];
             
-            // Show results page
             document.getElementById('homePage').classList.add('hidden');
             document.getElementById('resultsPage').classList.remove('hidden');
             document.getElementById('queryTitle').textContent = query;
@@ -262,13 +317,11 @@
             document.getElementById('resultsContent').classList.remove('hidden');
             document.getElementById('followUpSection').classList.remove('hidden');
 
-            // Summary - convert markdown-like to HTML
             let html = text
                 .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
                 .replace(/\n/g, '<br>');
             document.getElementById('summaryText').innerHTML = html;
 
-            // Product cards
             const cardsContainer = document.getElementById('productCards');
             cardsContainer.innerHTML = '';
             
@@ -285,12 +338,15 @@
                             ${i === 0 ? '<span class="absolute top-3 left-3 bg-red-500 text-white text-xs px-3 py-1 rounded-full font-medium">⭐ MELHOR ESCOLHA</span>' : ''}
                             <div class="h-48 bg-gray-50 flex items-center justify-center p-4">
                                 ${hasImg 
-                                    ? `<img src="${p.image_url}" alt="${p.name}" class="max-h-full max-w-full object-contain">`
+                                    ? `<img src="${p.image_url}" alt="${p.name}" class="max-h-full max-w-full object-contain" onerror="this.outerHTML='<span class=\\'text-5xl\\'>${getEmoji(p.name)}</span>'">`
                                     : `<span class="text-5xl">${getEmoji(p.name)}</span>`}
                             </div>
                         </div>
                         <div class="p-4">
-                            <p class="text-xs text-gray-400 uppercase tracking-wide mb-1">${link?.store || 'Loja'}</p>
+                            <p class="text-xs text-gray-400 uppercase tracking-wide mb-1 flex items-center gap-1">
+                                <span class="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
+                                ${link?.store || 'Loja'}
+                            </p>
                             <h3 class="font-semibold text-gray-900 mb-2 line-clamp-2">${p.name}</h3>
                             <div class="flex items-center justify-between">
                                 <span class="text-xl font-bold text-gray-900">${price}</span>
@@ -307,7 +363,6 @@
                 });
             }
 
-            // Suggestions
             const suggestionsContainer = document.getElementById('suggestions');
             const suggestions = generateSuggestions(currentQuery, products);
             suggestionsContainer.innerHTML = suggestions.map(s => 
@@ -348,20 +403,17 @@
         }
 
         function generateSuggestions(query, products) {
-            const base = [
-                'Qual tem a melhor bateria?',
-                'Alguma opção mais barata?',
-                'Qual é à prova d\'água?',
-            ];
-            
-            if (query.toLowerCase().includes('fone')) {
+            const q = query.toLowerCase();
+            if (q.includes('fone')) {
                 return ['Qual tem melhor cancelamento de ruído?', 'Alguma opção da Sony?', 'Qual dura mais a bateria?'];
             }
-            if (query.toLowerCase().includes('notebook')) {
+            if (q.includes('notebook')) {
                 return ['Qual é melhor pra jogos?', 'Algum com SSD de 512GB?', 'Qual tem melhor tela?'];
             }
-            
-            return base;
+            if (q.includes('cadeira')) {
+                return ['Qual é mais confortável?', 'Alguma com apoio lombar?', 'Qual aguenta mais peso?'];
+            }
+            return ['Qual tem a melhor avaliação?', 'Alguma opção mais barata?', 'Qual você recomenda?'];
         }
     </script>
 </body>
