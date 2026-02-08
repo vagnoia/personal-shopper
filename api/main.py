@@ -34,11 +34,15 @@ async def serve_frontend():
     return HTMLResponse("<h1>Frontend not found</h1>")
 
 try:
-    from routers import search
+    from routers import search, chat
     app.include_router(search.router, prefix="/api", tags=["search"])
+    app.include_router(chat.router, prefix="/api", tags=["chat"])
 except Exception as e:
     @app.post("/api/search")
     async def search_fallback():
+        return JSONResponse({"error": str(e)}, status_code=500)
+    @app.post("/api/chat")
+    async def chat_fallback():
         return JSONResponse({"error": str(e)}, status_code=500)
 
 @app.get("/{path:path}")
