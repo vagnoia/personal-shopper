@@ -9,30 +9,41 @@
     <style>
         body { font-family: 'Inter', sans-serif; overflow-x: hidden; }
         
-        /* Pinterest-style floating images */
+        /* Floating images like BuscaAI */
         .floating-img {
             position: absolute;
-            border-radius: 20px;
+            border-radius: 32px;
             overflow: hidden;
-            box-shadow: 0 8px 30px rgba(0,0,0,0.08);
-            transition: transform 0.3s ease;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.15);
+            transition: transform 0.7s ease;
+            pointer-events: none;
         }
-        .floating-img:hover { transform: scale(1.02); }
         .floating-img img { width: 100%; height: 100%; object-fit: cover; }
         
-        /* Left side positions - top to bottom */
-        .img-l1 { left: 20px; top: 70px; width: 130px; height: 130px; }
-        .img-l2 { left: 100px; top: 160px; width: 120px; height: 150px; }
-        .img-l3 { left: 30px; top: 320px; width: 110px; height: 110px; }
-        .img-l4 { left: 20px; top: 480px; width: 150px; height: 150px; border-radius: 24px; }
+        /* Left side positions */
+        .pos-1 { top: 15%; left: -2%; width: 140px; transform: rotate(-8deg); }
+        .pos-2 { top: 10%; left: 12%; width: 120px; transform: rotate(5deg); }
+        .pos-3 { top: 45%; left: -1%; width: 130px; transform: rotate(-5deg); }
+        .pos-4 { top: 65%; left: 6%; width: 110px; transform: rotate(10deg); }
         
-        /* Right side positions - top to bottom */
-        .img-r1 { right: 100px; top: 70px; width: 110px; height: 110px; }
-        .img-r2 { right: 20px; top: 140px; width: 130px; height: 160px; }
-        .img-r3 { right: 30px; top: 340px; width: 140px; height: 170px; }
-        .img-r4 { right: 80px; top: 520px; width: 160px; height: 120px; }
+        /* Right side positions */
+        .pos-5 { top: 12%; right: 10%; width: 130px; transform: rotate(-6deg); }
+        .pos-6 { top: 8%; right: -3%; width: 150px; transform: rotate(12deg); }
+        .pos-7 { top: 40%; right: -2%; width: 140px; transform: rotate(-10deg); }
+        .pos-8 { top: 70%; right: 8%; width: 120px; transform: rotate(8deg); }
         
-        @media (max-width: 1280px) {
+        @media (min-width: 1024px) {
+            .pos-1 { width: 200px; left: 2%; }
+            .pos-2 { width: 160px; left: 15%; }
+            .pos-3 { width: 180px; left: 1%; }
+            .pos-4 { width: 150px; left: 8%; }
+            .pos-5 { width: 180px; right: 12%; }
+            .pos-6 { width: 220px; right: 1%; }
+            .pos-7 { width: 200px; right: 0%; }
+            .pos-8 { width: 160px; right: 10%; }
+        }
+        
+        @media (max-width: 1024px) {
             .floating-img { display: none; }
         }
         
@@ -69,32 +80,16 @@
             </div>
         </header>
 
-        <!-- Floating Images - Left Side -->
-        <div class="floating-img img-l1 cursor-pointer" onclick="search('fone bluetooth premium')">
-            <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=300" alt="">
-        </div>
-        <div class="floating-img img-l2 cursor-pointer" onclick="search('mochila notebook')">
-            <img src="https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=300" alt="">
-        </div>
-        <div class="floating-img img-l3 cursor-pointer" onclick="search('tênis esportivo')">
-            <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=300" alt="">
-        </div>
-        <div class="floating-img img-l4 cursor-pointer" onclick="search('headphone studio')">
-            <img src="https://images.unsplash.com/photo-1583394838336-acd977736f90?w=300" alt="">
-        </div>
-
-        <!-- Floating Images - Right Side -->
-        <div class="floating-img img-r1 cursor-pointer" onclick="search('óculos de sol')">
-            <img src="https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=300" alt="">
-        </div>
-        <div class="floating-img img-r2 cursor-pointer" onclick="search('smartwatch')">
-            <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=300" alt="">
-        </div>
-        <div class="floating-img img-r3 cursor-pointer" onclick="search('tablet iPad')">
-            <img src="https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=300" alt="">
-        </div>
-        <div class="floating-img img-r4 cursor-pointer" onclick="search('setup home office')">
-            <img src="https://images.unsplash.com/photo-1593062096033-9a26b09da705?w=300" alt="">
+        <!-- Floating Images -->
+        <div class="absolute inset-0 overflow-hidden pointer-events-none">
+            <img class="floating-img pos-1" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAubAnLfyNguVnRz1edD7xjKvF_BKhSXgaSnjqlXymXYZR8B7ImqWK86zVaPT5g_2smQ3ztT5M8FRtmoK0INrJwIfKpo-Y80CXy3UrfTNveXSUUH2Wa0dmfyGIPX_90o0GJU1gX5PCdQeGjBLWIIZ_2IZPOoGRdtMpumiP-qwd6uR3Q-AbGF7yzpYv6j76LHG3FjgFda72Mvg7y-xCtf-RwwEoKtq2KX2pDLWNB_L657S9cKoXWWoeg1uB8RCdorY4Y4qp1H3K9BAE" alt="">
+            <img class="floating-img pos-2" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCH6r5omS2kc9fR_hWF9ZNFqhSmsQqw5qZKhSpKHuhOvP0hgZutxoIqu5RaMPmmz9uXwnwVMzB5nglcWruQ58LFe0Fttj2Eef57AK70GTbpOU1XLltyD4__QmftxffQOEC94A_r0Wbsv50YJzDUaW_f66nun6gHPvCHZyVurVBmHLDCRSk03yxWbkf-iPQ3bu9YoQ86Aaa4mL3kYXs8ZRAPc3u2NsfcQtJSHlJGbv8vBcm_6krNocSSBDPFISYsxU51naRFU1p_eLw" alt="">
+            <img class="floating-img pos-3" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCzaEykSCoSbaWefD91EqdXVzUJDY9AMo1i7Sn-rss75KHzEtRcw0hV1yVvvObnxT5puSRLlEEQmghg3bQy3yuQPZc_-OgnjjJT-3AVRVvC5qZvcHD1O9qwY3ESUC2qFq0YCZZ9XhjzYcFzf63L3OCjHJsRJ-FdtMSIM8k4W9Ko94ZXeH7qUYZ_kbUAo1BCy4MjUmv4_KWQP9Wq6piWizP9nTnDWyI1IdUl2DxBOqrXb-sT4Jm7Uu4QxVZvRcfd6Kp0cIS9v_VfUho" alt="">
+            <img class="floating-img pos-4" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBGwIZPFQVDKbSWOJtpx7PgFfsbeFFrlFYUznEwIwd1yMqrEr7PLNWHp78YindJ7WzHksB4yNGwymbeaESZiXFmCqK9ol4lR18kTgs5Zyo2T1yC9bUfWLeDmZwsZzpHZpxJIHJg50OLCGIwzCbdxtW0oCgdzUkeE4899ZXC94WMNhLUaVlbOD41iMYi-oZDLFSVKRLpRQTyfH5ZrcuPPUo5mKQpcMQG9_EQb-Mq30Z1kXSKlZpns3npYyigL4AbnTILLpaSaK2r-lg" alt="">
+            <img class="floating-img pos-5" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA6wLVD7gl3T9nSrfUgc3AOvx3x7805JPzrOcRdjpqKDpfIY7CbbrvPMKhaKY82tcJnmkc9gkckbaUfiZm9kApYjKzXqcF0g1STgdrgWV0grP2hKA8wboTYFJCJ_RZsgRQhCFgJFZvmPWaz49j3qrvIgpJ_PsnIchhARTVfiDVGOrRKiyNxV3NM9exMvpaRngWRJyOCdpljloENEryuUDVvNxuFSKoWx3lhWyio6MjVD5IhcXqcszCz8nknVRIa7Tuf4qm0GdXFV6U" alt="">
+            <img class="floating-img pos-6" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBfE4fwWz7nfXkDtuFV34Osl0t7A0G6xWywVyKo9sF-8yqWdNHWpx6bc4ps7G_nK57GILXm7w20l71E1wdto8rFItSLOvznINyhUOPX-Cbp7jSYZ8Tp992TEoA8W4TrcpL3KDQmk1moJG-CyJCbEsPalhNC7FFqYT5kk9XoFDaF1j0VUfsFcbPWgAcBjjEXhQgWNKvrGfKPTNeL1GFYuISD44HuFgKXBjBwVpeNUMKcotpKFALjQ_6Cla9sbLGarTLnGKoaOmZtyGY" alt="">
+            <img class="floating-img pos-7" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAA_UHcb8PdusnnqDKffd2GZoUS52CCXkphvjFud3U2eVe9XZNq7BaTN9CaMwsgmkQDbVnxKGFB_9viziw97MQKrAYIjSq-BpgD4QpLrRn2swtjxjEQQJwl0yBdN340GKmwn0Z5sZqJHJXKZS4fUc7D8MIGut_QaDQBDiM4PasipXOX4VHqWicYiz_h1Cc9IWFekyWxSjaiJ1j_SUKpJHd4Pvf4miLs4YZ4rTqywUsHq_32Y-TBGRA6L98_jXz3CM9I2bEOsbbhMe8" alt="">
+            <img class="floating-img pos-8" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDr5K1BDuwa39n_pRsQ6jc4wlYBwMp9FTouhZDNk-wvHMu2F8qB-i5BEtCPmOReUA7i4Owgpswsxa-2_WW-dUsmGSrXaZADoEEhpoOVjTTTvtENNEzmXEd_Bl8WljbgbRohQWJgZzUY_XHXgfdnSn-VTvTyKma_GzW5YXoMVdMPpHwJPsZ_kgeJRU6P8_ruZNs4I1IPRuCAxBB5FTMmXcgfW-WAlP5fc0svj2ra4-sKliBBc0mOwNhlpX7VGPQB4AQjSBwMrQ9aPKo" alt="">
         </div>
 
         <!-- Hero Section -->
