@@ -21,16 +21,18 @@
         .floating-img img { width: 100%; height: 100%; object-fit: cover; }
         
         /* Positions for floating images - left side */
-        .img-l1 { left: -40px; top: 80px; width: 140px; height: 200px; }
-        .img-l2 { left: 20px; top: 300px; width: 120px; height: 160px; }
-        .img-l3 { left: 120px; top: 120px; width: 160px; height: 220px; }
-        .img-l4 { left: 80px; top: 380px; width: 100px; height: 140px; }
+        .img-l1 { left: -30px; top: 60px; width: 120px; height: 180px; }
+        .img-l2 { left: 40px; top: 260px; width: 140px; height: 180px; }
+        .img-l3 { left: 140px; top: 80px; width: 130px; height: 160px; }
+        .img-l4 { left: 10px; top: 460px; width: 110px; height: 140px; }
+        .img-l5 { left: 160px; top: 420px; width: 100px; height: 130px; }
         
         /* Positions for floating images - right side */
-        .img-r1 { right: -40px; top: 80px; width: 140px; height: 200px; }
-        .img-r2 { right: 20px; top: 300px; width: 120px; height: 160px; }
-        .img-r3 { right: 120px; top: 120px; width: 160px; height: 220px; }
-        .img-r4 { right: 80px; top: 380px; width: 100px; height: 140px; }
+        .img-r1 { right: -30px; top: 60px; width: 120px; height: 180px; }
+        .img-r2 { right: 40px; top: 260px; width: 140px; height: 180px; }
+        .img-r3 { right: 140px; top: 80px; width: 130px; height: 160px; }
+        .img-r4 { right: 10px; top: 460px; width: 110px; height: 140px; }
+        .img-r5 { right: 160px; top: 420px; width: 100px; height: 130px; }
         
         @media (max-width: 1200px) {
             .floating-img { display: none; }
@@ -58,20 +60,11 @@
         <!-- Header -->
         <header class="relative z-50">
             <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-                <div class="flex items-center gap-8">
-                    <a href="/" class="flex items-center gap-2">
-                        <span class="text-2xl">🛒</span>
-                        <span class="font-bold text-xl text-gray-900">PersonalShopper</span>
-                    </a>
-                    <nav class="hidden md:flex items-center gap-6 text-sm text-gray-600">
-                        <a href="#" class="hover:text-gray-900">Explorar</a>
-                    </nav>
-                </div>
-                <div class="flex items-center gap-4">
-                    <nav class="hidden md:flex items-center gap-6 text-sm text-gray-600">
-                        <a href="#" class="hover:text-gray-900">Sobre</a>
-                        <a href="#" class="hover:text-gray-900">Empresas</a>
-                    </nav>
+                <a href="/" class="flex items-center gap-2">
+                    <span class="text-2xl">🛒</span>
+                    <span class="font-bold text-xl text-gray-900">PersonalShopper</span>
+                </a>
+                <div class="flex items-center gap-3">
                     <button class="text-sm bg-red-500 text-white px-4 py-2 rounded-full hover:bg-red-600 font-medium">Entrar</button>
                     <button class="text-sm text-gray-700 hover:text-gray-900 px-3 py-2">Criar conta</button>
                 </div>
@@ -82,28 +75,34 @@
         <div class="floating-img img-l1 cursor-pointer" onclick="search('fone bluetooth premium')">
             <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=300" alt="">
         </div>
-        <div class="floating-img img-l2 cursor-pointer" onclick="search('decoração casa')">
-            <img src="https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=300" alt="">
+        <div class="floating-img img-l2 cursor-pointer" onclick="search('tênis esportivo')">
+            <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=300" alt="">
         </div>
         <div class="floating-img img-l3 cursor-pointer" onclick="search('mochila notebook')">
             <img src="https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=300" alt="">
         </div>
-        <div class="floating-img img-l4 cursor-pointer" onclick="search('tênis esportivo')">
-            <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=300" alt="">
+        <div class="floating-img img-l4 cursor-pointer" onclick="search('mouse gamer')">
+            <img src="https://images.unsplash.com/photo-1527814050087-3793815479db?w=300" alt="">
+        </div>
+        <div class="floating-img img-l5 cursor-pointer" onclick="search('monitor ultrawide')">
+            <img src="https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=300" alt="">
         </div>
 
         <!-- Floating Images - Right Side -->
         <div class="floating-img img-r1 cursor-pointer" onclick="search('smartwatch')">
             <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=300" alt="">
         </div>
-        <div class="floating-img img-r2 cursor-pointer" onclick="search('óculos de sol')">
+        <div class="floating-img img-r2 cursor-pointer" onclick="search('perfume importado')">
+            <img src="https://images.unsplash.com/photo-1585386959984-a4155224a1ad?w=300" alt="">
+        </div>
+        <div class="floating-img img-r3 cursor-pointer" onclick="search('óculos de sol')">
             <img src="https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=300" alt="">
         </div>
-        <div class="floating-img img-r3 cursor-pointer" onclick="search('cadeira gamer')">
-            <img src="https://images.unsplash.com/photo-1590736969955-71cc94901144?w=300" alt="">
+        <div class="floating-img img-r4 cursor-pointer" onclick="search('teclado mecânico')">
+            <img src="https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=300" alt="">
         </div>
-        <div class="floating-img img-r4 cursor-pointer" onclick="search('perfume importado')">
-            <img src="https://images.unsplash.com/photo-1585386959984-a4155224a1ad?w=300" alt="">
+        <div class="floating-img img-r5 cursor-pointer" onclick="search('cadeira gamer')">
+            <img src="https://images.unsplash.com/photo-1590736969955-71cc94901144?w=300" alt="">
         </div>
 
         <!-- Hero Section -->
@@ -125,7 +124,7 @@
                     <input 
                         type="text" 
                         id="searchInput"
-                        placeholder="O que você está procurando?"
+                        placeholder="fone bluetooth até 500 reais"
                         class="search-input w-full px-6 py-4 pr-14 text-lg border-2 border-gray-200 rounded-full focus:outline-none focus:border-red-400 bg-white shadow-sm"
                     >
                     <button type="submit" class="absolute right-2 top-1/2 -translate-y-1/2 bg-red-500 hover:bg-red-600 text-white w-11 h-11 rounded-full flex items-center justify-center transition shadow-md">
@@ -145,12 +144,6 @@
             </div>
         </section>
 
-        <!-- Scroll indicator -->
-        <div class="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
-            <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/>
-            </svg>
-        </div>
     </div>
 
     <!-- CHAT PAGE -->
